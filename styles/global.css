@@ -33,6 +33,24 @@
   --space-4: 1rem;     
   --space-6: 1.5rem;   
   --space-8: 2rem;     
+
+  /* Text Muted */
+  --color-text-muted: #9CA3AF;
+  
+  /* Borders  */
+  --color-border-medium: #E5E7EB;
+
+
+  /* Semantic Colors */
+  --color-success: #2ECC71;
+  --color-danger: #FF3B30;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
 }
 
 * {
@@ -50,4 +68,14 @@ body {
     user-select: none; 
     -webkit-user-select: none;
     overscroll-behavior-y: none;
+}
+
+button {
+    min-height: 44px; /* Tamaño mínimo táctil por accesibilidad en Apple */
+    min-width: 44px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    color: inherit;
 }

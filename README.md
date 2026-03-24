@@ -26,20 +26,21 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 ## 📋 Backlog de Développement Frontend
 
 **Phase 1 : Configuration et Planification**
-* Initialiser le dépôt GitHub.
-* Mettre en place l'arborescence des dossiers (`/css`, `/js`, `img`, etc.).
-* Rédiger le cahier des charges et intégrer ce backlog dans le gestionnaire de tâches.
+* Initialiser le dépôt GitHub. Juan Marcos DE MIGUEL
+* Mettre en place l'arborescence des dossiers (`/css`, `/js`, `img`, etc.). Juan Marcos DE MIGUEL
+* Rédiger le cahier des charges et intégrer ce backlog dans le gestionnaire de tâches. Julian Andres RAYES CANO
 
 **Phase 2 : Structure Globale et UI de base**
-* Créer le squelette HTML5 principal (Layout de base).
-* Configurer le fichier CSS avec les variables globales (couleurs, typographies, bordures) extraites du prototype.
-* Intégrer et styliser la barre de navigation inférieure (Bottom Navigation Bar) pour lier les 4 vues principales.
+* Créer le squelette HTML5 principal (Layout de base). Julian Andres RAYES CANO
+* Configurer le fichier CSS avec les variables globales (couleurs, typographies, bordures) extraites du prototype. Juan Cruz BAUDINO CASAIS
+* Intégrer et styliser la barre de navigation inférieure (Bottom Navigation Bar) pour lier les 4 vues principales.Juan Marcos DE MIGUEL
 
 **Phase 3 : Intégration de l'écran "Accueil"**
-* Intégrer l'en-tête dynamique (Message de bienvenue + sélection de la laverie).
-* Concevoir la grille de cartes pour l'état des machines.
-* Définir les classes CSS pour les 4 états : Libre, En cours, Réservée et Hors-ligne.
-* Implémenter la logique JavaScript pour le chronomètre circulaire des machines "En cours".
+* Intégrer l'en-tête dynamique (Message de bienvenue + sélection de la laverie). Facundo ARITO
+* Concevoir la grille de cartes pour l'état des machines. Julian Andres RAYES CANO
+* Définir les classes CSS pour les 4 états : Libre, En cours, Réservée et Hors-ligne. Julian Andres RAYES CANO
+* Implémenter la logique JavaScript pour le chronomètre circulaire des machines "En cours". Facundo ARITO
+* Concevoir la fenêtre de "Réserver un Créneau". 
 
 **Phase 4 : Intégration de l'écran "Réservations"**
 * Intégrer la carte supérieure affichant le prochain tour de l'utilisateur avec un compte à rebours.

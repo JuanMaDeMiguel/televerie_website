@@ -3,10 +3,10 @@ const viewCache = {};
 
 // Mapeo de los índices de los botones a sus respectivos archivos HTML
 const routes = {
-  0: 'src/accueil.html',
-  1: 'src/classement.html',
-  2: 'src/reservations.html',
-  3: 'src/profil.html'
+  0: 'src/views/home.html',
+  1: 'src/views/ranking.html',
+  2: 'src/views/reservations.html',
+  3: 'src/views/profile.html'
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -36,7 +36,7 @@ function initRouter() {
       // Actualizar UI del menú
       navItems.forEach(nav => nav.classList.remove(activeClass));
       item.classList.add(activeClass);
-      
+
       // Cargar la vista correspondiente
       loadView(routes[index]);
     });
@@ -48,7 +48,7 @@ function initRouter() {
 
 function loadView(path) {
   const viewContainer = document.getElementById('app-view-placeholder');
-  
+
   // Revisar si la vista ya está en la caché
   if (viewCache[path]) {
     viewContainer.innerHTML = viewCache[path];

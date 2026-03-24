@@ -27,7 +27,7 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 
 **Phase 1 : Configuration et Planification**
 * Initialiser le dépôt GitHub.
-* Mettre en place l'arborescence des dossiers (`/css`, `/js`, `/assets/images`, `/assets/icons`).
+* Mettre en place l'arborescence des dossiers (`/css`, `/js`, `img`, etc.).
 * Rédiger le cahier des charges et intégrer ce backlog dans le gestionnaire de tâches.
 
 **Phase 2 : Structure Globale et UI de base**
@@ -38,7 +38,7 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 **Phase 3 : Intégration de l'écran "Accueil"**
 * Intégrer l'en-tête dynamique (Message de bienvenue + sélection de la laverie).
 * Concevoir la grille de cartes pour l'état des machines.
-* [cite_start]Définir les classes CSS pour les 4 états : Libre, En cours, Réservée et Hors-ligne[cite: 379].
+* Définir les classes CSS pour les 4 états : Libre, En cours, Réservée et Hors-ligne.
 * Implémenter la logique JavaScript pour le chronomètre circulaire des machines "En cours".
 
 **Phase 4 : Intégration de l'écran "Réservations"**
@@ -58,8 +58,7 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 * Concevoir la liste de navigation pour la gestion du compte (Données personnelles, Moyens de paiement, Notifications, Paramètres, etc.).
 
 **Phase 7 : Interactions et Tests**
-* Lier la navigation entre `index.html`, `reservations.html`, `classement.html` et `profil.html`.
-* Vérifier le comportement Responsive (Mobile-First) via les outils de développement du navigateur.
+* Lier la navigation.
 
 ## 👥 Équipe (Group 4 Laveries)
 * Facundo ARITO

@@ -78,6 +78,9 @@ function triggerViewInit(path) {
   // Inicializar el JS específico de la vista de perfil
   if (path === 'src/views/profile.html' && typeof initProfileView === 'function') {
     initProfileView();
+  } 
+  if (path === 'src/views/reservations.html' && typeof initReservationsView === 'function') {
+    initReservationsView();
   }
 
   // A medida que crees los archivos home.js, ranking.js, etc.,

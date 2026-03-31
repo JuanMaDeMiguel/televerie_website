@@ -22,12 +22,12 @@
       </p>
 
       <div class="reservations-countdown" id="reservations-countdown">
-        <span class="reservations-countdown__value" id="reservations-countdown-value">10:30</span>
+        <span class="reservations-countdown__value" id="reservations-countdown-value">--:--</span>
         <span class="reservations-countdown__unit" id="reservations-countdown-unit">heures</span>
       </div>
 
       <p class="reservations-card__meta" id="reservations-next-info">
-        Jeudi 2 Avril, 14:00 - Machine L1
+        Touchez le calendrier pour réserver un créneau.
       </p>
     </article>
 
@@ -114,7 +114,6 @@
       </div>
 
       <div class="reservations-detail" id="reservations-detail-content"></div>
-
       <div class="reservations-modal__footer" id="reservations-detail-actions"></div>
     </section>
 
@@ -139,25 +138,9 @@
 
           <div class="reservations-picker__calendar" id="reservation-booking-swipe-surface">
             <div class="reservations-picker__month-row">
-              <button
-                class="reservations-picker__month-button"
-                id="booking-prev-month"
-                type="button"
-                aria-label="Mois précédent"
-              >
-                ‹
-              </button>
-
-              <span class="reservations-picker__month-label" id="booking-month-label">Mars 2026</span>
-
-              <button
-                class="reservations-picker__month-button"
-                id="booking-next-month"
-                type="button"
-                aria-label="Mois suivant"
-              >
-                ›
-              </button>
+              <button class="reservations-picker__month-button" id="booking-prev-month" type="button" aria-label="Mois précédent">‹</button>
+              <span class="reservations-picker__month-label" id="booking-month-label"></span>
+              <button class="reservations-picker__month-button" id="booking-next-month" type="button" aria-label="Mois suivant">›</button>
             </div>
 
             <div class="reservations-picker__weekdays" aria-hidden="true">
@@ -181,17 +164,8 @@
       </div>
 
       <div class="reservations-modal__footer">
-        <button class="reservations-button reservations-button--ghost" type="button" data-close-modal>
-          Fermer
-        </button>
-        <button
-          class="reservations-button reservations-button--primary"
-          type="button"
-          id="booking-confirm-button"
-          disabled
-        >
-          OK
-        </button>
+        <button class="reservations-button reservations-button--ghost" type="button" data-close-modal>Fermer</button>
+        <button class="reservations-button reservations-button--primary" type="button" id="booking-confirm-button" disabled>OK</button>
       </div>
     </section>
   </div>

@@ -1,23 +1,40 @@
 window.ReservationsService = (function () {
-  const STORAGE_KEY = "televerie_reservations_db_v2";
-  const JSON_PATH = "./ressources/data/reservations.json";
+  const STORAGE_KEY = "televerie_reservations_db_v3";
 
-  const DEFAULT_HOURS = [
-    "08:00",
-    "09:00",
-    "10:00",
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "16:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00"
+  const JSON_PATHS = [
+    "./ressources/data/reservations.json",
+    "ressources/data/reservations.json",
+    "./reservations.json"
   ];
+
+  const FALLBACK_DATA = {
+    settings: {
+      availableHours: [
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00",
+        "19:00",
+        "20:00",
+        "21:00"
+      ],
+      slotDurationMinutes: 60,
+      pricePerSlot: 4,
+      defaultMachine: "Machine L1",
+      defaultPaymentMethod: "card"
+    },
+    nextReservation: null,
+    demand: [],
+    bookedSlots: {},
+    history: []
+  };
 
   let dbCache = null;
   let initPromise = null;
@@ -30,24 +47,12 @@ window.ReservationsService = (function () {
     return String(value).padStart(2, "0");
   }
 
-  function getTodayKey() {
-    const now = new Date();
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  }
-
   function toDateKey(date) {
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 
-  function dateKeyToDate(dateKey) {
-    return new Date(`${dateKey}T00:00:00`);
-  }
-
-  function compareDateKeys(a, b) {
-    if (a === b) {
-      return 0;
-    }
-    return a > b ? 1 : -1;
+  function todayKey() {
+    return toDateKey(new Date());
   }
 
   function addDays(date, amount) {
@@ -65,29 +70,27 @@ window.ReservationsService = (function () {
     return !Number.isNaN(parsed.getTime()) && toDateKey(parsed) === dateKey;
   }
 
-  function isValidTimeSlot(time) {
+  function isValidTime(time) {
     return typeof time === "string" && /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time);
   }
 
   function isFutureSlot(dateKey, time) {
-    if (!isValidDateKey(dateKey) || !isValidTimeSlot(time)) {
+    if (!isValidDateKey(dateKey) || !isValidTime(time)) {
       return false;
     }
 
-    const slotDate = new Date(`${dateKey}T${time}:00`);
-    return slotDate.getTime() > Date.now();
+    const dateTime = new Date(`${dateKey}T${time}:00`);
+    return dateTime.getTime() > Date.now();
   }
 
-  function sanitizeHours(hours) {
-    if (!Array.isArray(hours)) {
-      return DEFAULT_HOURS.slice();
+  function compareDateKeys(a, b) {
+    if (a === b) {
+      return 0;
     }
-
-    const uniqueHours = [...new Set(hours.filter(isValidTimeSlot))].sort();
-    return uniqueHours.length ? uniqueHours : DEFAULT_HOURS.slice();
+    return a > b ? 1 : -1;
   }
 
-  function buildFallbackDemand() {
+  function buildDefaultDemand() {
     const today = new Date();
     const values = [4, 6, 5, 5, 9, 4, 12];
 
@@ -97,64 +100,63 @@ window.ReservationsService = (function () {
     }));
   }
 
+  function sanitizeSettings(rawSettings) {
+    const rawHours = Array.isArray(rawSettings?.availableHours) ? rawSettings.availableHours : [];
+    const availableHours = [...new Set(rawHours.filter(isValidTime))].sort();
+
+    return {
+      availableHours: availableHours.length ? availableHours : deepClone(FALLBACK_DATA.settings.availableHours),
+      slotDurationMinutes:
+        Number(rawSettings?.slotDurationMinutes) > 0
+          ? Number(rawSettings.slotDurationMinutes)
+          : FALLBACK_DATA.settings.slotDurationMinutes,
+      pricePerSlot:
+        Number(rawSettings?.pricePerSlot) >= 0
+          ? Number(rawSettings.pricePerSlot)
+          : FALLBACK_DATA.settings.pricePerSlot,
+      defaultMachine:
+        typeof rawSettings?.defaultMachine === "string" && rawSettings.defaultMachine.trim()
+          ? rawSettings.defaultMachine.trim()
+          : FALLBACK_DATA.settings.defaultMachine,
+      defaultPaymentMethod:
+        ["card", "cash", "qr"].includes(rawSettings?.defaultPaymentMethod)
+          ? rawSettings.defaultPaymentMethod
+          : FALLBACK_DATA.settings.defaultPaymentMethod
+    };
+  }
+
   function sanitizeDemand(rawDemand) {
     if (!Array.isArray(rawDemand)) {
-      return buildFallbackDemand();
+      return buildDefaultDemand();
     }
 
-    const todayKey = getTodayKey();
-    const map = new Map();
-
-    rawDemand.forEach((item) => {
-      if (!item || !isValidDateKey(item.date)) {
-        return;
-      }
-
-      if (compareDateKeys(item.date, todayKey) < 0) {
-        return;
-      }
-
-      const numericValue = Number(item.value);
-      if (Number.isNaN(numericValue) || numericValue < 0) {
-        return;
-      }
-
-      map.set(item.date, {
+    const filtered = rawDemand
+      .filter((item) => item && isValidDateKey(item.date) && Number(item.value) >= 0)
+      .map((item) => ({
         date: item.date,
-        value: Math.round(numericValue)
-      });
-    });
+        value: Math.round(Number(item.value))
+      }))
+      .sort((a, b) => compareDateKeys(a.date, b.date));
 
-    const result = [...map.values()].sort((a, b) => compareDateKeys(a.date, b.date));
-    return result.length ? result : buildFallbackDemand();
+    return filtered.length ? filtered : buildDefaultDemand();
   }
 
   function sanitizeBookedSlots(rawBookedSlots, allowedHours) {
     const result = {};
-    const todayKey = getTodayKey();
 
     if (!rawBookedSlots || typeof rawBookedSlots !== "object") {
       return result;
     }
 
     Object.keys(rawBookedSlots).forEach((dateKey) => {
-      if (!isValidDateKey(dateKey)) {
+      if (!isValidDateKey(dateKey) || !Array.isArray(rawBookedSlots[dateKey])) {
         return;
       }
 
-      if (compareDateKeys(dateKey, todayKey) < 0) {
-        return;
-      }
+      const validSlots = [...new Set(rawBookedSlots[dateKey].filter((time) => allowedHours.includes(time)))].sort();
 
-      const value = rawBookedSlots[dateKey];
-      if (!Array.isArray(value)) {
-        return;
-      }
-
-      const uniqueTimes = [...new Set(value.filter((time) => allowedHours.includes(time)))].sort();
-
-      if (uniqueTimes.length) {
-        result[dateKey] = uniqueTimes;
+      if (validSlots.length) {
+        result[dateKey] = validSlots;
       }
     });
 
@@ -172,6 +174,7 @@ window.ReservationsService = (function () {
       }
 
       const parsedDate = new Date(item.date);
+
       return (
         typeof item.machine === "string" &&
         !Number.isNaN(parsedDate.getTime()) &&
@@ -190,7 +193,11 @@ window.ReservationsService = (function () {
       return null;
     }
 
-    if (!isValidDateKey(rawReservation.date) || !settings.availableHours.includes(rawReservation.time)) {
+    if (!isValidDateKey(rawReservation.date)) {
+      return null;
+    }
+
+    if (!settings.availableHours.includes(rawReservation.time)) {
       return null;
     }
 
@@ -198,147 +205,77 @@ window.ReservationsService = (function () {
       return null;
     }
 
-    const duration = Number(rawReservation.durationMinutes);
-    const price = Number(rawReservation.price);
-
     return {
       date: rawReservation.date,
       time: rawReservation.time,
-      machine: typeof rawReservation.machine === "string" && rawReservation.machine.trim()
-        ? rawReservation.machine.trim()
-        : settings.defaultMachine,
-      durationMinutes: Number.isNaN(duration) || duration <= 0 ? settings.slotDurationMinutes : duration,
-      price: Number.isNaN(price) || price < 0 ? settings.pricePerSlot : price,
-      payment: ["card", "cash", "qr"].includes(rawReservation.payment)
-        ? rawReservation.payment
-        : settings.defaultPaymentMethod,
+      machine:
+        typeof rawReservation.machine === "string" && rawReservation.machine.trim()
+          ? rawReservation.machine.trim()
+          : settings.defaultMachine,
+      durationMinutes:
+        Number(rawReservation.durationMinutes) > 0
+          ? Number(rawReservation.durationMinutes)
+          : settings.slotDurationMinutes,
+      price:
+        Number(rawReservation.price) >= 0
+          ? Number(rawReservation.price)
+          : settings.pricePerSlot,
+      payment:
+        ["card", "cash", "qr"].includes(rawReservation.payment)
+          ? rawReservation.payment
+          : settings.defaultPaymentMethod,
       status: "confirmed"
     };
   }
 
-  function ensureDemandEntry(db, dateKey) {
-    let existing = db.demand.find((item) => item.date === dateKey);
-
-    if (!existing) {
-      existing = {
-        date: dateKey,
-        value: 0
-      };
-      db.demand.push(existing);
-      db.demand.sort((a, b) => compareDateKeys(a.date, b.date));
-    }
-
-    return existing;
-  }
-
-  function updateDemandCounter(db, dateKey, delta) {
-    if (!isValidDateKey(dateKey)) {
-      return;
-    }
-
-    const entry = ensureDemandEntry(db, dateKey);
-    entry.value = Math.max(0, entry.value + delta);
-  }
-
-  function ensureReservationSlotBooked(db) {
-    if (!db.nextReservation) {
-      return;
-    }
-
-    const { date, time } = db.nextReservation;
-
-    if (!db.bookedSlots[date]) {
-      db.bookedSlots[date] = [];
-    }
-
-    if (!db.bookedSlots[date].includes(time)) {
-      db.bookedSlots[date].push(time);
-      db.bookedSlots[date].sort();
-    }
-  }
-
-  function removeBookedSlot(db, dateKey, time) {
-    if (!db.bookedSlots[dateKey]) {
-      return;
-    }
-
-    db.bookedSlots[dateKey] = db.bookedSlots[dateKey].filter((slot) => slot !== time);
-
-    if (!db.bookedSlots[dateKey].length) {
-      delete db.bookedSlots[dateKey];
-    }
-  }
-
   function sanitizeDatabase(rawData) {
-    const settings = {
-      availableHours: sanitizeHours(rawData?.settings?.availableHours),
-      slotDurationMinutes:
-        Number(rawData?.settings?.slotDurationMinutes) > 0
-          ? Number(rawData.settings.slotDurationMinutes)
-          : 60,
-      pricePerSlot:
-        Number(rawData?.settings?.pricePerSlot) >= 0
-          ? Number(rawData.settings.pricePerSlot)
-          : 4,
-      defaultMachine:
-        typeof rawData?.settings?.defaultMachine === "string" && rawData.settings.defaultMachine.trim()
-          ? rawData.settings.defaultMachine.trim()
-          : "Machine L1",
-      defaultPaymentMethod:
-        ["card", "cash", "qr"].includes(rawData?.settings?.defaultPaymentMethod)
-          ? rawData.settings.defaultPaymentMethod
-          : "card"
-    };
+    const settings = sanitizeSettings(rawData?.settings);
 
     const db = {
       settings,
-      nextReservation: null,
+      nextReservation: sanitizeNextReservation(rawData?.nextReservation, settings),
       demand: sanitizeDemand(rawData?.demand),
       bookedSlots: sanitizeBookedSlots(rawData?.bookedSlots, settings.availableHours),
       history: sanitizeHistory(rawData?.history)
     };
 
-    db.nextReservation = sanitizeNextReservation(rawData?.nextReservation, settings);
-    ensureReservationSlotBooked(db);
+    if (db.nextReservation) {
+      const { date, time } = db.nextReservation;
+
+      if (!db.bookedSlots[date]) {
+        db.bookedSlots[date] = [];
+      }
+
+      if (!db.bookedSlots[date].includes(time)) {
+        db.bookedSlots[date].push(time);
+        db.bookedSlots[date].sort();
+      }
+    }
 
     return db;
   }
 
-  async function loadSeedData() {
-    try {
-      const response = await fetch(JSON_PATH);
+  async function tryFetchJson() {
+    for (const path of JSON_PATHS) {
+      try {
+        const response = await fetch(path);
+        if (!response.ok) {
+          continue;
+        }
 
-      if (!response.ok) {
-        throw new Error("Unable to load reservations seed data");
+        return await response.json();
+      } catch (error) {
+        /* Keep trying next path */
       }
-
-      return await response.json();
-    } catch (error) {
-      return {
-        settings: {
-          availableHours: DEFAULT_HOURS,
-          slotDurationMinutes: 60,
-          pricePerSlot: 4,
-          defaultMachine: "Machine L1",
-          defaultPaymentMethod: "card"
-        },
-        nextReservation: null,
-        demand: buildFallbackDemand(),
-        bookedSlots: {},
-        history: []
-      };
     }
+
+    return deepClone(FALLBACK_DATA);
   }
 
   function loadFromStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-
-      if (!raw) {
-        return null;
-      }
-
-      return JSON.parse(raw);
+      return raw ? JSON.parse(raw) : null;
     } catch (error) {
       return null;
     }
@@ -355,8 +292,8 @@ window.ReservationsService = (function () {
 
     if (!initPromise) {
       initPromise = (async function () {
-        const storedData = loadFromStorage();
-        const source = storedData || await loadSeedData();
+        const stored = loadFromStorage();
+        const source = stored || await tryFetchJson();
         dbCache = sanitizeDatabase(source);
         persist();
         return deepClone(dbCache);
@@ -387,45 +324,49 @@ window.ReservationsService = (function () {
     }));
   }
 
+  function updateDemand(dateKey, delta) {
+    let demandEntry = dbCache.demand.find((item) => item.date === dateKey);
+
+    if (!demandEntry) {
+      demandEntry = { date: dateKey, value: 0 };
+      dbCache.demand.push(demandEntry);
+      dbCache.demand.sort((a, b) => compareDateKeys(a.date, b.date));
+    }
+
+    demandEntry.value = Math.max(0, demandEntry.value + delta);
+  }
+
   async function reserveSlot(dateKey, time) {
     await init();
 
     if (!isValidDateKey(dateKey) || !dbCache.settings.availableHours.includes(time)) {
-      return {
-        ok: false,
-        message: "Créneau invalide."
-      };
+      return { ok: false, message: "Créneau invalide." };
     }
 
     if (!isFutureSlot(dateKey, time)) {
-      return {
-        ok: false,
-        message: "Impossible de réserver un créneau passé."
-      };
+      return { ok: false, message: "Impossible de réserver un créneau passé." };
     }
 
-    const currentBooked = dbCache.bookedSlots[dateKey] || [];
+    const daySlots = dbCache.bookedSlots[dateKey] || [];
 
-    if (currentBooked.includes(time)) {
-      return {
-        ok: false,
-        message: "Ce créneau est déjà pris."
-      };
-    }
-
-    if (
-      dbCache.nextReservation &&
-      dbCache.nextReservation.date === dateKey &&
-      dbCache.nextReservation.time === time
-    ) {
-      return {
-        ok: true
-      };
+    if (daySlots.includes(time)) {
+      return { ok: false, message: "Ce créneau est déjà pris." };
     }
 
     if (dbCache.nextReservation) {
-      removeBookedSlot(dbCache, dbCache.nextReservation.date, dbCache.nextReservation.time);
-      updateDemandCounter(dbCache, dbCache.nextReservation.date, -1);
+      const previous = dbCache.nextReservation;
+
+      if (dbCache.bookedSlots[previous.date]) {
+        dbCache.bookedSlots[previous.date] = dbCache.bookedSlots[previous.date].filter(
+          (slot) => slot !== previous.time
+        );
+
+        if (!dbCache.bookedSlots[previous.date].length) {
+          delete dbCache.bookedSlots[previous.date];
+        }
+      }
+
+      updateDemand(previous.date, -1);
     }
 
     if (!dbCache.bookedSlots[dateKey]) {
@@ -445,40 +386,41 @@ window.ReservationsService = (function () {
       status: "confirmed"
     };
 
-    updateDemandCounter(dbCache, dateKey, 1);
+    updateDemand(dateKey, 1);
     persist();
 
-    return {
-      ok: true
-    };
+    return { ok: true };
   }
 
   async function cancelNextReservation() {
     await init();
 
     if (!dbCache.nextReservation) {
-      return {
-        ok: false,
-        message: "Aucune réservation active."
-      };
+      return { ok: false, message: "Aucune réservation active." };
     }
 
     const reservation = dbCache.nextReservation;
 
-    removeBookedSlot(dbCache, reservation.date, reservation.time);
-    updateDemandCounter(dbCache, reservation.date, -1);
-    dbCache.nextReservation = null;
+    if (dbCache.bookedSlots[reservation.date]) {
+      dbCache.bookedSlots[reservation.date] = dbCache.bookedSlots[reservation.date].filter(
+        (slot) => slot !== reservation.time
+      );
 
+      if (!dbCache.bookedSlots[reservation.date].length) {
+        delete dbCache.bookedSlots[reservation.date];
+      }
+    }
+
+    updateDemand(reservation.date, -1);
+    dbCache.nextReservation = null;
     persist();
 
-    return {
-      ok: true
-    };
+    return { ok: true };
   }
 
   async function resetFromSeed() {
-    const seed = await loadSeedData();
-    dbCache = sanitizeDatabase(seed);
+    const source = await tryFetchJson();
+    dbCache = sanitizeDatabase(source);
     persist();
     return deepClone(dbCache);
   }
@@ -489,6 +431,7 @@ window.ReservationsService = (function () {
     getTimeSlotsForDate,
     reserveSlot,
     cancelNextReservation,
-    resetFromSeed
+    resetFromSeed,
+    todayKey
   };
 })();

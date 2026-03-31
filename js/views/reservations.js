@@ -1,29 +1,4 @@
 (function () {
-  const monthNames = [
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre"
-  ];
-
-  const dayNames = [
-    "Dimanche",
-    "Lundi",
-    "Mardi",
-    "Mercredi",
-    "Jeudi",
-    "Vendredi",
-    "Samedi"
-  ];
-
   let reservationsState = null;
 
   function pad(value) {
@@ -56,12 +31,32 @@
     return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
+  function formatMonthYear(date) {
+    return new Intl.DateTimeFormat("fr-FR", {
+      month: "long",
+      year: "numeric"
+    }).format(date);
+  }
+
   function formatNextReservation(date, machine) {
-    return `${dayNames[date.getDay()]} ${date.getDate()} ${monthNames[date.getMonth()]}, ${formatTime(date)} - ${machine}`;
+    const dayLabel = new Intl.DateTimeFormat("fr-FR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    }).format(date);
+
+    const normalizedDayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+    return `${normalizedDayLabel}, ${formatTime(date)} - ${machine}`;
   }
 
   function formatHistoryDate(date) {
-    return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()} à ${formatTime(date)}`;
+    const dayLabel = new Intl.DateTimeFormat("fr-FR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }).format(date);
+
+    return `${dayLabel} à ${formatTime(date)}`;
   }
 
   function formatRangeLabel(data) {
@@ -71,12 +66,14 @@
 
     const first = data[0].date;
     const last = data[data.length - 1].date;
+    const firstMonth = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(first);
+    const lastMonth = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(last);
 
     if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
-      return `${first.getDate()}–${last.getDate()} ${monthNames[first.getMonth()]}`;
+      return `${first.getDate()}–${last.getDate()} ${firstMonth}`;
     }
 
-    return `${first.getDate()} ${monthNames[first.getMonth()]} - ${last.getDate()} ${monthNames[last.getMonth()]}`;
+    return `${first.getDate()} ${firstMonth} – ${last.getDate()} ${lastMonth}`;
   }
 
   function getPaymentIcon(method) {
@@ -133,13 +130,15 @@
 
   function buildReservationsState() {
     const now = new Date();
+    const today = startOfDay(now);
     const nextReservationDate = new Date(now.getTime() + ((10 * 60) + 30) * 60 * 1000);
+
     nextReservationDate.setSeconds(0, 0);
 
     const demandValues = [4, 6, 5, 5, 9, 4, 12];
 
     const demandData = demandValues.map((value, index) => ({
-      date: addDays(startOfDay(now), index),
+      date: addDays(today, index),
       value
     }));
 
@@ -162,7 +161,7 @@
         machine: "L2",
         duration: 45,
         price: 3.5,
-        date: setTime(addDays(startOfDay(now), -5), 14, 30),
+        date: setTime(addDays(today, -5), 14, 30),
         status: "done",
         payment: "card"
       },
@@ -170,7 +169,7 @@
         machine: "S1",
         duration: 60,
         price: 4.0,
-        date: setTime(addDays(startOfDay(now), -8), 10, 15),
+        date: setTime(addDays(today, -8), 10, 15),
         status: "done",
         payment: "qr"
       },
@@ -178,7 +177,7 @@
         machine: "L1",
         duration: 45,
         price: 3.5,
-        date: setTime(addDays(startOfDay(now), -12), 16, 45),
+        date: setTime(addDays(today, -12), 16, 45),
         status: "done",
         payment: "cash"
       },
@@ -186,16 +185,16 @@
         machine: "L3",
         duration: 45,
         price: 3.5,
-        date: setTime(addDays(startOfDay(now), -15), 9, 0),
+        date: setTime(addDays(today, -15), 9, 0),
         status: "cancelled",
         payment: "qr"
       }
     ];
 
     return {
-      currentMonth: now.getMonth(),
-      currentYear: now.getFullYear(),
-      selectedDate: addDays(startOfDay(now), 2),
+      currentMonth: today.getMonth(),
+      currentYear: today.getFullYear(),
+      selectedDate: addDays(today, 2),
       nextReservation: {
         machine: "Machine L1",
         date: nextReservationDate
@@ -216,8 +215,9 @@
 
     const now = new Date();
     const diff = Math.max(reservationsState.nextReservation.date.getTime() - now.getTime(), 0);
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const totalMinutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
 
     valueElement.textContent = `${pad(hours)}:${pad(minutes)}`;
     infoElement.textContent = formatNextReservation(
@@ -237,13 +237,14 @@
     const { currentMonth, currentYear, selectedDate, calendarStatus } = reservationsState;
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const visibleMonthDate = new Date(currentYear, currentMonth, 1);
 
-    monthLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    monthLabel.textContent = formatMonthYear(visibleMonthDate);
 
     const cells = [];
 
     for (let i = 0; i < firstDayOfMonth; i += 1) {
-      cells.push('<div class="reservations-calendar-empty" aria-hidden="true"></div>');
+      cells.push('<div class="reservations-calendar__empty" aria-hidden="true"></div>');
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
@@ -252,7 +253,7 @@
       const status = calendarStatus[dateKey] || "available";
       const isSelected = toDateKey(selectedDate) === dateKey;
 
-      const classes = ["reservations-calendar-day"];
+      const classes = ["reservations-calendar__day"];
 
       if (status === "recommended") {
         classes.push("is-recommended");
@@ -272,7 +273,7 @@
           class="${classes.join(" ")}"
           data-date="${dateKey}"
           ${status === "unavailable" ? "disabled" : ""}
-          aria-label="Réserver le ${day} ${monthNames[currentMonth]}"
+          aria-label="Réserver le ${day}"
         >
           ${day}
         </button>
@@ -281,7 +282,9 @@
 
     grid.innerHTML = cells.join("");
 
-    grid.querySelectorAll(".reservations-calendar-day:not(:disabled)").forEach((button) => {
+    const clickableDays = grid.querySelectorAll(".reservations-calendar__day:not(:disabled)");
+
+    clickableDays.forEach((button) => {
       button.addEventListener("click", () => {
         const [year, month, day] = button.dataset.date.split("-").map(Number);
         reservationsState.selectedDate = new Date(year, month - 1, day);
@@ -307,15 +310,15 @@
       const isPeak = item.value === maxValue;
 
       return `
-        <div class="reservations-demand-column">
-          <div class="reservations-demand-value">${item.value}</div>
-          <div class="reservations-demand-bar-wrap">
+        <div class="reservations-demand__column">
+          <div class="reservations-demand__value">${item.value}</div>
+          <div class="reservations-demand__bar-wrap">
             <div
-              class="reservations-demand-bar ${isPeak ? "is-peak" : ""}"
+              class="reservations-demand__bar ${isPeak ? "is-peak" : ""}"
               style="height: ${height}%"
             ></div>
           </div>
-          <div class="reservations-demand-label">${item.date.getDate()}</div>
+          <div class="reservations-demand__label">${item.date.getDate()}</div>
         </div>
       `;
     }).join("");
@@ -330,25 +333,25 @@
 
     list.innerHTML = reservationsState.historyData.map((item) => {
       const statusLabel = item.status === "cancelled" ? "Annulé" : "Terminé";
+      const statusClass = item.status === "cancelled" ? "is-cancelled" : "is-done";
 
       return `
-        <article class="reservations-history-item">
-          <div class="reservations-history-icon">
+        <article class="reservations-history__item">
+          <div class="reservations-history__icon" aria-hidden="true">
             ${getPaymentIcon(item.payment)}
           </div>
 
-          <div class="reservations-history-main">
-            <div class="reservations-history-title-row">
-              <span class="reservations-history-machine">${item.machine}</span>
-              <span class="reservations-history-duration">• ${item.duration} min</span>
+          <div class="reservations-history__main">
+            <div class="reservations-history__title-row">
+              <span class="reservations-history__machine">${item.machine}</span>
+              <span class="reservations-history__duration">• ${item.duration} min</span>
             </div>
-
-            <p class="reservations-history-date">${formatHistoryDate(item.date)}</p>
+            <p class="reservations-history__date">${formatHistoryDate(item.date)}</p>
           </div>
 
-          <div class="reservations-history-side">
-            <div class="reservations-history-price">${item.price.toFixed(2)}€</div>
-            <div class="reservations-history-status ${item.status === "cancelled" ? "is-cancelled" : "is-done"}">
+          <div class="reservations-history__side">
+            <div class="reservations-history__price">${item.price.toFixed(2)}€</div>
+            <div class="reservations-history__status ${statusClass}">
               ${getStatusIcon(item.status)}
               <span>${statusLabel}</span>
             </div>
@@ -365,6 +368,10 @@
       return;
     }
 
+    if (window.reservationsCountdownInterval) {
+      clearInterval(window.reservationsCountdownInterval);
+    }
+
     reservationsState = buildReservationsState();
 
     renderCountdown();
@@ -372,18 +379,8 @@
     renderDemandChart();
     renderHistory();
 
-    if (window.reservationsCountdownInterval) {
-      clearInterval(window.reservationsCountdownInterval);
-    }
-
     window.reservationsCountdownInterval = setInterval(renderCountdown, 1000);
   }
 
   window.initReservationsView = initReservationsView;
-
-  document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("reservations-view")) {
-      initReservationsView();
-    }
-  });
 })();

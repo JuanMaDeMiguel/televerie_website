@@ -1,16 +1,39 @@
-.profile-container {
-    padding: var(--space-4) var(--space-6) 100px; /* Padding bottom para la navbar */
+.profile-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.profile-view {
+    padding: var(--space-4) var(--space-6) 100px;
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
+    animation: fadeIn 0.2s ease-in-out;
 }
 
-/* Header */
+.profile-view--hidden {
+    display: none !important;
+}
+
+/* Header principal y sub-headers */
 .profile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: var(--space-4);
+}
+.profile-sub-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+.profile-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    margin-left: -var(--space-2);
 }
 .profile-header__subtitle {
     font-size: var(--text-xs);
@@ -75,7 +98,7 @@
 
 /* Score */
 .profile-score {
-    background-color: #f0f7ff; /* Azul muy claro */
+    background-color: #f0f7ff; 
     border-radius: var(--radius-lg);
     padding: var(--space-4);
     display: flex;
@@ -116,7 +139,7 @@
     border-bottom: none;
 }
 .profile-ranking__item--active {
-    background-color: #1a202c; /* Oscuro */
+    background-color: #1a202c; 
     color: var(--color-bg-surface);
 }
 .profile-ranking__pos {
@@ -179,4 +202,10 @@
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
 }

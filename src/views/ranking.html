@@ -1,3 +1,29 @@
-<div class="view-content">
-  <h2>Je suis la vue de Classement</h2>
+<div class="ranking">
+  <header class="ranking__header">
+    <h1 class="ranking__title">Mon Score de Crédit</h1>
+  </header>
+
+  <section class="ranking__score-section">
+    <div class="ranking__score-card">
+      <div class="ranking__gauge-container">
+        <svg class="ranking__gauge-svg" viewBox="0 0 200 200">
+          <circle class="ranking__gauge-bg" cx="100" cy="100" r="85"></circle>
+          <circle class="ranking__gauge-progress" id="ranking-progress-circle" cx="100" cy="100" r="85"></circle>
+        </svg>
+        <div class="ranking__score-content">
+          <div class="ranking__score-value" id="ranking-user-score">0</div>
+          <div class="ranking__score-label">pts</div>
+        </div>
+      </div>
+      <p class="ranking__score-message">
+        Excellent score ! Vous êtes dans le top 10% des utilisateurs.
+      </p>
+    </div>
+  </section>
+
+  <section class="ranking__leaderboard">
+    <h2 class="ranking__leaderboard-title">Top 10 Résidence</h2>
+    <div class="ranking__list" id="ranking-list">
+      </div>
+  </section>
 </div>

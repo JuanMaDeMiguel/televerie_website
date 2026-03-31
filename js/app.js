@@ -46,13 +46,23 @@ function initRouter() {
   loadView(routes[0]);
 }
 
+
+
 function loadView(path) {
   const viewContainer = document.getElementById('app-view-placeholder');
 
   // Revisar si la vista ya está en la caché
   if (viewCache[path]) {
     viewContainer.innerHTML = viewCache[path];
-    triggerViewInit(path);
+  
+
+      // Llamada al inicializador específico de la vista
+    if (path.includes('ranking.html') && typeof initRanking === 'function') {
+      initRanking();
+    }
+    
+      triggerViewInit(path);
+
     return;
   }
 
@@ -66,7 +76,6 @@ function loadView(path) {
       // Guardar en caché y mostrar
       viewCache[path] = html;
       viewContainer.innerHTML = html;
-      triggerViewInit(path);
     })
     .catch(error => {
       console.error(error);

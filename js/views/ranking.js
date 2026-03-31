@@ -1,14 +1,14 @@
 const leaderboardData = [
-  { rank: 1, name: 'Sophie Martin', residence: 'Résidence Océan', score: 12450, avatar: 'https://images.unsplash.com/photo-1690444963408-9573a17a8058?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHNtaWxpbmclMjBmYWNlfGVufDF8fHx8MTc3MzcyMTA3N3ww&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 2, name: 'Thomas Dubois', residence: 'Résidence Plage', score: 11320, avatar: 'https://images.unsplash.com/photo-1656857783579-bc7cd0d61a06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBzdHVkZW50JTIwY2FzdWFsJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzczNjgzNDU1fDA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 3, name: 'Marie Chen', residence: 'Résidence Campus', score: 10890, avatar: 'https://images.unsplash.com/photo-1581065178026-390bc4e78dad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhbiUyMHdvbWFuJTIwcHJvZmVzc2lvbmFsJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzczNjA2Mjk4fDA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 4, name: 'Lucas Bernard', residence: 'Résidence Sud', score: 9560, avatar: 'https://images.unsplash.com/photo-1609126396762-542d99fc7a07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMG1hbiUyMHN0dWRlbnQlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzM2ODM0NTV8MA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 5, name: 'Emma Garcia', residence: 'Résidence Nord', score: 9120, avatar: 'https://images.unsplash.com/photo-1618622127587-3261f2b2f553?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXRpbmElMjB3b21hbiUyMHN0dWRlbnQlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzM2ODM0NTZ8MA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 6, name: 'Pierre Leroy', residence: 'Résidence Est', score: 8760, avatar: 'https://images.unsplash.com/photo-1656857783579-bc7cd0d61a06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYW4lMjBzdHVkZW50JTIwY2FzdWFsJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzczNjgzNDU1fDA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 7, name: 'Amina Rahmani', residence: 'Résidence Kergoat', score: 8450, avatar: './img/default-avatar.png', isCurrentUser: true },
-  { rank: 8, name: 'Julie Rousseau', residence: 'Résidence Ouest', score: 8120, avatar: 'https://images.unsplash.com/photo-1581065178026-390bc4e78dad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhbiUyMHdvbWFuJTIwcHJvZmVzc2lvbmFsJTIwcG9ydHJhaXR8ZW58MXx8fHwxNzczNjA2Mjk4fDA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 9, name: 'Alexandre Moreau', residence: 'Résidence Centre', score: 7890, avatar: 'https://images.unsplash.com/photo-1609126396762-542d99fc7a07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGFjayUyMG1hbiUyMHN0dWRlbnQlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzM2ODM0NTV8MA&ixlib=rb-4.1.0&q=80&w=1080' },
-  { rank: 10, name: 'Camille Laurent', residence: 'Résidence Horizon', score: 7560, avatar: 'https://images.unsplash.com/photo-1618622127587-3261f2b2f553?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsYXRpbmElMjB3b21hbiUyMHN0dWRlbnQlMjBwb3J0cmFpdHxlbnwxfHx8fDE3NzM2ODM0NTZ8MA&ixlib=rb-4.1.0&q=80&w=1080' },
+  { rank: 1, name: 'Sophie Martin', residence: 'Résidence Océan', score: 12450, avatar: './img/profile_pics/01.png' },
+  { rank: 2, name: 'Thomas Dubois', residence: 'Résidence Plage', score: 11320, avatar: './img/profile_pics/02.png' },
+  { rank: 3, name: 'Marie Chen', residence: 'Résidence Campus', score: 10890, avatar: './img/profile_pics/03.png' },
+  { rank: 4, name: 'Lucas Bernard', residence: 'Résidence Sud', score: 9560, avatar: './img/profile_pics/04.png' },
+  { rank: 5, name: 'Emma Garcia', residence: 'Résidence Nord', score: 9120, avatar: './img/profile_pics/05.png' },
+  { rank: 6, name: 'Pierre Leroy', residence: 'Résidence Est', score: 8760, avatar: './img/profile_pics/06.png' },
+  { rank: 7, name: 'Amina Rahmani', residence: 'Résidence Kergoat', score: 8450, avatar: './img/profile_pics/07.png', isCurrentUser: true },
+  { rank: 8, name: 'Julie Rousseau', residence: 'Résidence Ouest', score: 8120, avatar: './img/profile_pics/08.png' },
+  { rank: 9, name: 'Alexandre Moreau', residence: 'Résidence Centre', score: 7890, avatar: './img/profile_pics/09.png' },
+  { rank: 10, name: 'Camille Laurent', residence: 'Résidence Horizon', score: 7560, avatar: './img/profile_pics/10.png' },
 ];
 
 const lucideIcons = {

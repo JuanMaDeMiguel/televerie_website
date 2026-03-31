@@ -1,5 +1,5 @@
 // Esta función debe ser llamada por tu app.js una vez que el HTML haya sido inyectado
-function initRanking() {
+function initRankingView() {
   
   // 1. Datos encapsulados localmente (Evita el SyntaxError de redeclaración)
   const leaderboardData = [

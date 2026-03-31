@@ -79,3 +79,13 @@ button {
     font-family: inherit;
     color: inherit;
 }
+
+/* Ocultar la barra de desplazamiento globalmente */
+* {
+    -ms-overflow-style: none;  /* Para Internet Explorer y Edge antiguo */
+    scrollbar-width: none;     /* Para Firefox */
+}
+
+*::-webkit-scrollbar {
+    display: none;             /* Para Chrome, Safari, Opera y navegadores móviles */
+}

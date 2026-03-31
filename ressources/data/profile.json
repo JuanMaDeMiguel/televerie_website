@@ -1,0 +1,29 @@
+{
+  "user": {
+    "firstName": "Amina",
+    "lastName": "Rahmani",
+    "email": "amina.rahmani@univ.fr",
+    "phone": "+33 6 12 34 56 78",
+    "avatar": "img/profile_pics/07.png",
+    "birthDate": "1998-05-14",
+    "gender": "Femme",
+    "joinDate": "2024-09-01",
+    "address": "15 Rue de Brest, 29280 Plouzané",
+    "paymentMethods": [
+      {
+        "id": "card_1",
+        "brand": "Visa",
+        "number": "4532 0122 3455 9012",
+        "expiry": "12/26",
+        "isDefault": true
+      },
+      {
+        "id": "card_2",
+        "brand": "Mastercard",
+        "number": "5412 7500 1234 5678",
+        "expiry": "05/27",
+        "isDefault": false
+      }
+    ]
+  }
+}

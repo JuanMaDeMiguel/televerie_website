@@ -1,3 +1,114 @@
-<div class="view-content">
-  <h2>Je suis la vue de Accueil</h2>
+<div class="view-home">
+  <header class="home-header">
+    <div class="header-user">
+      <span class="greeting">Bonjour, Amina</span>
+      <img src="assets/images/amina.jpg" alt="Profil de Amina" class="avatar" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'%23ccc\'><circle cx=\'12\' cy=\'12\' r=\'12\'/></svg>'">
+    </div>
+    
+    <div class="header-brand">
+      <svg class="brand-logo" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="9" height="9" rx="4.5" fill="var(--color-primary)"/>
+        <rect x="13" y="2" width="9" height="9" rx="4.5" fill="var(--color-primary)"/>
+        <rect x="2" y="13" width="9" height="9" rx="4.5" fill="var(--color-primary)"/>
+        <rect x="13" y="13" width="9" height="9" rx="4.5" fill="var(--color-primary)"/>
+      </svg>
+      <h1 class="brand-name">Televerie.</h1>
+    </div>
+
+    <div class="header-location">
+      <span class="location-name">Laverie de Kergoat</span>
+      <span class="location-divider">|</span>
+      <span class="location-time">
+        <span class="status-dot dot-green"></span> 8h - 22h
+      </span>
+      <a href="#" class="location-map">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+          <line x1="9" y1="3" x2="9" y2="18"></line>
+          <line x1="15" y1="6" x2="15" y2="21"></line>
+        </svg>
+        Plan
+      </a>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <div class="machines-grid">
+      
+      <div class="machine-card">
+        <div class="machine-status">
+          <span class="status-dot dot-green"></span>
+          <span class="status-text">Libre</span>
+        </div>
+        <div class="machine-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" stroke="var(--color-primary)" stroke-width="3"/>
+            <circle cx="20" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="28" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="32" cy="40" r="12" stroke="var(--color-primary)" stroke-width="3"/>
+            <ellipse cx="32" cy="40" rx="6" ry="3" fill="var(--color-primary)"/>
+          </svg>
+        </div>
+        <div class="machine-name">L1</div>
+      </div>
+
+      <div class="machine-card en-cours" data-end-time="2026-03-31T11:45:00">
+        <div class="machine-status">
+          <span class="status-dot dot-orange"></span>
+          <span class="status-text">En cours</span>
+        </div>
+        <div class="machine-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" stroke="var(--color-primary)" stroke-width="3"/>
+            <circle cx="20" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="28" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="32" cy="40" r="12" stroke="#FEF0D9" stroke-width="3"/>
+            <circle class="progress-ring" cx="32" cy="40" r="12" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-dasharray="75.39" stroke-dashoffset="30" transform="rotate(-90 32 40)"/>
+            <text class="timer-text" x="32" y="44" font-size="10" font-weight="bold" fill="#F59E0B" text-anchor="middle" font-family="var(--font-family-sans)">17:00</text>
+          </svg>
+        </div>
+        <div class="machine-name">L2</div>
+      </div>
+
+      <div class="machine-card">
+        <div class="machine-status">
+          <span class="status-dot dot-blue"></span>
+          <span class="status-text text-secondary">Réservée</span>
+        </div>
+        <div class="machine-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" stroke="var(--color-primary)" stroke-width="3"/>
+            <circle cx="20" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="28" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="32" cy="40" r="12" stroke="var(--color-primary)" stroke-width="3"/>
+            <ellipse cx="32" cy="40" rx="6" ry="3" fill="var(--color-primary)"/>
+          </svg>
+        </div>
+        <div class="machine-name">L3</div>
+      </div>
+
+      <div class="machine-card en-cours" data-end-time="2026-03-31T11:21:00">
+        <div class="machine-status">
+          <span class="status-dot dot-orange"></span>
+          <span class="status-text">En cours</span>
+        </div>
+        <div class="machine-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="8" stroke="var(--color-primary)" stroke-width="3"/>
+            <circle cx="20" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="28" cy="18" r="2" fill="var(--color-primary)"/>
+            <circle cx="32" cy="40" r="12" stroke="#FEF0D9" stroke-width="3"/>
+            <circle class="progress-ring" cx="32" cy="40" r="12" stroke="#F59E0B" stroke-width="3" stroke-linecap="round" stroke-dasharray="75.39" stroke-dashoffset="50" transform="rotate(-90 32 40)"/>
+            <text class="timer-text" x="32" y="44" font-size="10" font-weight="bold" fill="#F59E0B" text-anchor="middle" font-family="var(--font-family-sans)">08:00</text>
+          </svg>
+        </div>
+        <div class="machine-name">L4</div>
+      </div>
+
+    </div>
+
+    <div class="cta-container">
+      <button class="btn-primary-pill">Réserver un créneau</button>
+    </div>
+  </main>
 </div>

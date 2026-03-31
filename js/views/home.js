@@ -1,11 +1,17 @@
 let homeTimerInterval;
 
+function getRandomInitialDurationMs() {
+  const randomMinutes = Math.floor(Math.random() * 120) + 1; // 1-120 minutos
+  const randomSeconds = Math.floor(Math.random() * 60); // 0-59 segundos
+
+  return (randomMinutes * 60 + randomSeconds) * 1000;
+}
+
 // Format milliseconds into mm:ss
 function formatTime(ms) {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
@@ -57,6 +63,13 @@ function updateTimers() {
 // esta función es llamada desde js/app.js cuando se inyecta home.html
 function initHomeView() {
     console.log("Home view initialized!");
+
+  // reiniciamos timers de máquinas ocupadas con valores aleatorios al cargar la vista
+  const occupiedMachines = document.querySelectorAll('.machine-card.en-cours');
+  occupiedMachines.forEach(machine => {
+    const randomDurationMs = getRandomInitialDurationMs();
+    machine.dataset.endTime = new Date(Date.now() + randomDurationMs).toISOString();
+  });
 
     // animación de los anillos de progreso al cargar la vista
     const progressRings = document.querySelectorAll('.progress-ring');

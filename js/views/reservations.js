@@ -1,14 +1,30 @@
 (function () {
-  let reservationsState = null;
+  const state = {
+    db: null,
+    previewMonthDate: null,
+    bookingMonthDate: null,
+    selectedDateKey: null,
+    selectedTime: null,
+    bookingSlots: [],
+    activeModal: null
+  };
+
+  const refs = {};
 
   function pad(value) {
     return String(value).padStart(2, "0");
   }
 
-  function startOfDay(date) {
-    const copy = new Date(date);
-    copy.setHours(0, 0, 0, 0);
-    return copy;
+  function toDateKey(date) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  }
+
+  function dateKeyToDate(dateKey) {
+    return new Date(`${dateKey}T00:00:00`);
+  }
+
+  function startOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
   }
 
   function addDays(date, amount) {
@@ -17,63 +33,147 @@
     return copy;
   }
 
-  function setTime(date, hours, minutes) {
-    const copy = new Date(date);
-    copy.setHours(hours, minutes, 0, 0);
-    return copy;
+  function addMonths(date, amount) {
+    return new Date(date.getFullYear(), date.getMonth() + amount, 1);
   }
 
-  function toDateKey(date) {
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  function getTodayKey() {
+    return toDateKey(new Date());
+  }
+
+  function compareDateKeys(a, b) {
+    if (a === b) {
+      return 0;
+    }
+    return a > b ? 1 : -1;
+  }
+
+  function isCurrentOrFutureDate(dateKey) {
+    return compareDateKeys(dateKey, getTodayKey()) >= 0;
+  }
+
+  function capitalize(text) {
+    if (!text) {
+      return "";
+    }
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  function formatMonthYear(date) {
+    return capitalize(
+      new Intl.DateTimeFormat("fr-FR", {
+        month: "long",
+        year: "numeric"
+      }).format(date)
+    );
   }
 
   function formatTime(date) {
     return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
-  function formatMonthYear(date) {
-    return new Intl.DateTimeFormat("fr-FR", {
-      month: "long",
-      year: "numeric"
-    }).format(date);
+  function formatDateLabel(dateKey) {
+    return capitalize(
+      new Intl.DateTimeFormat("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(dateKeyToDate(dateKey))
+    );
   }
 
-  function formatNextReservation(date, machine) {
-    const dayLabel = new Intl.DateTimeFormat("fr-FR", {
-      weekday: "long",
-      day: "numeric",
-      month: "long"
-    }).format(date);
-
-    const normalizedDayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
-    return `${normalizedDayLabel}, ${formatTime(date)} - ${machine}`;
+  function formatCompactDate(dateKey) {
+    return capitalize(
+      new Intl.DateTimeFormat("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(dateKeyToDate(dateKey))
+    );
   }
 
-  function formatHistoryDate(date) {
-    const dayLabel = new Intl.DateTimeFormat("fr-FR", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    }).format(date);
+  function formatHistoryDate(dateString) {
+    const date = new Date(dateString);
 
-    return `${dayLabel} à ${formatTime(date)}`;
+    return `${capitalize(
+      new Intl.DateTimeFormat("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      }).format(date)
+    )} à ${formatTime(date)}`;
   }
 
-  function formatRangeLabel(data) {
-    if (!data.length) {
-      return "";
+  function formatSummaryDate(dateKey, time, machine) {
+    const date = dateKeyToDate(dateKey);
+    return `${capitalize(
+      new Intl.DateTimeFormat("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long"
+      }).format(date)
+    )}, ${time} - ${machine}`;
+  }
+
+  function getDemandMap() {
+    const map = new Map();
+
+    state.db.demand.forEach((item) => {
+      map.set(item.date, item.value);
+    });
+
+    return map;
+  }
+
+  function getDemandSeries() {
+    const today = new Date();
+    const demandMap = getDemandMap();
+    const series = [];
+
+    for (let index = 0; index < 7; index += 1) {
+      const date = addDays(today, index);
+      const dateKey = toDateKey(date);
+
+      series.push({
+        dateKey,
+        dayNumber: date.getDate(),
+        value: demandMap.get(dateKey) || 0
+      });
     }
 
-    const first = data[0].date;
-    const last = data[data.length - 1].date;
-    const firstMonth = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(first);
-    const lastMonth = new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(last);
+    return series;
+  }
 
-    if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
-      return `${first.getDate()}–${last.getDate()} ${firstMonth}`;
+  function getCalendarStatus(dateKey) {
+    const demandMap = getDemandMap();
+    const value = demandMap.get(dateKey);
+
+    if (compareDateKeys(dateKey, getTodayKey()) < 0) {
+      return "past";
     }
 
-    return `${first.getDate()} ${firstMonth} – ${last.getDate()} ${lastMonth}`;
+    if (typeof value !== "number") {
+      return "available";
+    }
+
+    if (value >= 10) {
+      return "unavailable";
+    }
+
+    if (value > 0 && value <= 4) {
+      return "recommended";
+    }
+
+    return "available";
+  }
+
+  function getInitialSelectedDateKey() {
+    if (state.db.nextReservation) {
+      return state.db.nextReservation.date;
+    }
+
+    return getTodayKey();
   }
 
   function getPaymentIcon(method) {
@@ -128,130 +228,91 @@
     `;
   }
 
-  function buildReservationsState() {
-    const now = new Date();
-    const today = startOfDay(now);
-    const nextReservationDate = new Date(now.getTime() + ((10 * 60) + 30) * 60 * 1000);
+  function cacheElements() {
+    refs.view = document.getElementById("reservations-view");
+    refs.summaryTrigger = document.getElementById("reservation-summary-trigger");
+    refs.summaryLabel = document.getElementById("reservations-summary-label");
+    refs.countdown = document.getElementById("reservations-countdown");
+    refs.countdownValue = document.getElementById("reservations-countdown-value");
+    refs.countdownUnit = document.getElementById("reservations-countdown-unit");
+    refs.nextInfo = document.getElementById("reservations-next-info");
 
-    nextReservationDate.setSeconds(0, 0);
+    refs.calendarTrigger = document.getElementById("reservation-calendar-trigger");
+    refs.calendarMonth = document.getElementById("reservations-calendar-month");
+    refs.calendarGrid = document.getElementById("reservations-calendar-grid");
 
-    const demandValues = [4, 6, 5, 5, 9, 4, 12];
+    refs.demandRange = document.getElementById("reservations-demand-range");
+    refs.demandChart = document.getElementById("reservations-demand-chart");
+    refs.historyList = document.getElementById("reservations-history-list");
 
-    const demandData = demandValues.map((value, index) => ({
-      date: addDays(today, index),
-      value
-    }));
+    refs.modalLayer = document.getElementById("reservations-modal-layer");
+    refs.detailModal = document.getElementById("reservation-detail-modal");
+    refs.detailContent = document.getElementById("reservations-detail-content");
+    refs.detailActions = document.getElementById("reservations-detail-actions");
 
-    const calendarStatus = {};
-
-    demandData.forEach((item) => {
-      const key = toDateKey(item.date);
-
-      if (item.value >= 10) {
-        calendarStatus[key] = "unavailable";
-      } else if (item.value <= 4) {
-        calendarStatus[key] = "recommended";
-      } else {
-        calendarStatus[key] = "available";
-      }
-    });
-
-    const historyData = [
-      {
-        machine: "L2",
-        duration: 45,
-        price: 3.5,
-        date: setTime(addDays(today, -5), 14, 30),
-        status: "done",
-        payment: "card"
-      },
-      {
-        machine: "S1",
-        duration: 60,
-        price: 4.0,
-        date: setTime(addDays(today, -8), 10, 15),
-        status: "done",
-        payment: "qr"
-      },
-      {
-        machine: "L1",
-        duration: 45,
-        price: 3.5,
-        date: setTime(addDays(today, -12), 16, 45),
-        status: "done",
-        payment: "cash"
-      },
-      {
-        machine: "L3",
-        duration: 45,
-        price: 3.5,
-        date: setTime(addDays(today, -15), 9, 0),
-        status: "cancelled",
-        payment: "qr"
-      }
-    ];
-
-    return {
-      currentMonth: today.getMonth(),
-      currentYear: today.getFullYear(),
-      selectedDate: addDays(today, 2),
-      nextReservation: {
-        machine: "Machine L1",
-        date: nextReservationDate
-      },
-      demandData,
-      calendarStatus,
-      historyData
-    };
+    refs.bookingModal = document.getElementById("reservation-booking-modal");
+    refs.bookingMonthLabel = document.getElementById("booking-month-label");
+    refs.bookingCalendarGrid = document.getElementById("booking-calendar-grid");
+    refs.bookingTimeSlots = document.getElementById("booking-time-slots");
+    refs.bookingConfirmButton = document.getElementById("booking-confirm-button");
+    refs.bookingPrevMonth = document.getElementById("booking-prev-month");
+    refs.bookingNextMonth = document.getElementById("booking-next-month");
+    refs.bookingSwipeSurface = document.getElementById("reservation-booking-swipe-surface");
   }
 
-  function renderCountdown() {
-    const valueElement = document.getElementById("reservations-countdown-value");
-    const infoElement = document.getElementById("reservations-next-info");
+  async function refreshData() {
+    state.db = await window.ReservationsService.getReservationsData();
+  }
 
-    if (!valueElement || !infoElement || !reservationsState) {
+  function renderSummaryCard() {
+    const reservation = state.db.nextReservation;
+
+    if (!reservation) {
+      refs.summaryLabel.textContent = "Aucune réservation active";
+      refs.countdown.classList.add("is-empty");
+      refs.countdownValue.textContent = "Aucune réservation";
+      refs.countdownUnit.hidden = true;
+      refs.nextInfo.textContent = "Touchez le calendrier pour réserver un créneau.";
       return;
     }
 
-    const now = new Date();
-    const diff = Math.max(reservationsState.nextReservation.date.getTime() - now.getTime(), 0);
-    const totalMinutes = Math.floor(diff / (1000 * 60));
+    refs.summaryLabel.textContent = "Ton prochain tour dans";
+    refs.countdown.classList.remove("is-empty");
+    refs.countdownUnit.hidden = false;
+    refs.countdownUnit.textContent = "heures";
+
+    const slotDateTime = new Date(`${reservation.date}T${reservation.time}:00`);
+    const diff = Math.max(slotDateTime.getTime() - Date.now(), 0);
+    const totalMinutes = Math.floor(diff / 60000);
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
 
-    valueElement.textContent = `${pad(hours)}:${pad(minutes)}`;
-    infoElement.textContent = formatNextReservation(
-      reservationsState.nextReservation.date,
-      reservationsState.nextReservation.machine
+    refs.countdownValue.textContent = `${pad(hours)}:${pad(minutes)}`;
+    refs.nextInfo.textContent = formatSummaryDate(
+      reservation.date,
+      reservation.time,
+      reservation.machine
     );
   }
 
-  function renderCalendar() {
-    const grid = document.getElementById("reservations-calendar-grid");
-    const monthLabel = document.getElementById("reservations-calendar-month");
+  function renderPreviewCalendar() {
+    const monthDate = state.previewMonthDate;
+    const firstDay = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1).getDay();
+    const lastDay = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
 
-    if (!grid || !monthLabel || !reservationsState) {
-      return;
-    }
-
-    const { currentMonth, currentYear, selectedDate, calendarStatus } = reservationsState;
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
-    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-    const visibleMonthDate = new Date(currentYear, currentMonth, 1);
-
-    monthLabel.textContent = formatMonthYear(visibleMonthDate);
+    refs.calendarMonth.textContent = formatMonthYear(monthDate);
 
     const cells = [];
 
-    for (let i = 0; i < firstDayOfMonth; i += 1) {
+    for (let index = 0; index < firstDay; index += 1) {
       cells.push('<div class="reservations-calendar__empty" aria-hidden="true"></div>');
     }
 
-    for (let day = 1; day <= daysInMonth; day += 1) {
-      const date = new Date(currentYear, currentMonth, day);
-      const dateKey = toDateKey(date);
-      const status = calendarStatus[dateKey] || "available";
-      const isSelected = toDateKey(selectedDate) === dateKey;
+    for (let day = 1; day <= lastDay; day += 1) {
+      const cellDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+      const dateKey = toDateKey(cellDate);
+      const status = getCalendarStatus(dateKey);
+      const isSelected = state.selectedDateKey === dateKey;
 
       const classes = ["reservations-calendar__day"];
 
@@ -263,7 +324,11 @@
         classes.push("is-unavailable");
       }
 
-      if (isSelected) {
+      if (status === "past") {
+        classes.push("is-past");
+      }
+
+      if (isSelected && status === "available") {
         classes.push("is-selected");
       }
 
@@ -271,43 +336,30 @@
         <button
           type="button"
           class="${classes.join(" ")}"
-          data-date="${dateKey}"
-          ${status === "unavailable" ? "disabled" : ""}
-          aria-label="Réserver le ${day}"
+          data-preview-date="${dateKey}"
+          ${status === "past" ? "disabled" : ""}
+          aria-label="Ouvrir la réservation pour le ${day}"
         >
           ${day}
         </button>
       `);
     }
 
-    grid.innerHTML = cells.join("");
-
-    const clickableDays = grid.querySelectorAll(".reservations-calendar__day:not(:disabled)");
-
-    clickableDays.forEach((button) => {
-      button.addEventListener("click", () => {
-        const [year, month, day] = button.dataset.date.split("-").map(Number);
-        reservationsState.selectedDate = new Date(year, month - 1, day);
-        renderCalendar();
-      });
-    });
+    refs.calendarGrid.innerHTML = cells.join("");
   }
 
   function renderDemandChart() {
-    const chart = document.getElementById("reservations-demand-chart");
-    const rangeLabel = document.getElementById("reservations-demand-range");
+    const series = getDemandSeries();
+    const values = series.map((item) => item.value);
+    const maxValue = Math.max(...values, 1);
 
-    if (!chart || !rangeLabel || !reservationsState) {
-      return;
-    }
+    refs.demandRange.textContent = `${series[0].dayNumber}–${series[series.length - 1].dayNumber} ${capitalize(
+      new Intl.DateTimeFormat("fr-FR", { month: "short" }).format(dateKeyToDate(series[0].dateKey))
+    )}`;
 
-    const maxValue = Math.max(...reservationsState.demandData.map((item) => item.value));
-
-    rangeLabel.textContent = formatRangeLabel(reservationsState.demandData);
-
-    chart.innerHTML = reservationsState.demandData.map((item) => {
+    refs.demandChart.innerHTML = series.map((item) => {
       const height = Math.max((item.value / maxValue) * 100, 14);
-      const isPeak = item.value === maxValue;
+      const isPeak = item.value === maxValue && item.value > 0;
 
       return `
         <div class="reservations-demand__column">
@@ -318,20 +370,14 @@
               style="height: ${height}%"
             ></div>
           </div>
-          <div class="reservations-demand__label">${item.date.getDate()}</div>
+          <div class="reservations-demand__label">${item.dayNumber}</div>
         </div>
       `;
     }).join("");
   }
 
   function renderHistory() {
-    const list = document.getElementById("reservations-history-list");
-
-    if (!list || !reservationsState) {
-      return;
-    }
-
-    list.innerHTML = reservationsState.historyData.map((item) => {
+    refs.historyList.innerHTML = state.db.history.map((item) => {
       const statusLabel = item.status === "cancelled" ? "Annulé" : "Terminé";
       const statusClass = item.status === "cancelled" ? "is-cancelled" : "is-done";
 
@@ -361,25 +407,458 @@
     }).join("");
   }
 
-  function initReservationsView() {
+  function renderDetailModal() {
+    const reservation = state.db.nextReservation;
+
+    if (!reservation) {
+      refs.detailContent.innerHTML = `
+        <div class="reservations-detail__empty">
+          <p class="reservations-detail__empty-title">Aucune réservation</p>
+          <p class="reservations-detail__empty-text">
+            Vous n'avez pas de prochain tour réservé pour le moment.
+          </p>
+        </div>
+      `;
+
+      refs.detailActions.innerHTML = "";
+      return;
+    }
+
+    refs.detailContent.innerHTML = `
+      <div class="reservations-detail__card">
+        <p class="reservations-detail__headline">${reservation.machine}</p>
+        <p class="reservations-detail__subheadline">
+          ${formatDateLabel(reservation.date)} à ${reservation.time}
+        </p>
+      </div>
+
+      <div class="reservations-detail__rows">
+        <div class="reservations-detail__row">
+          <span class="reservations-detail__label">Date</span>
+          <span class="reservations-detail__value">${formatCompactDate(reservation.date)}</span>
+        </div>
+        <div class="reservations-detail__row">
+          <span class="reservations-detail__label">Heure</span>
+          <span class="reservations-detail__value">${reservation.time}</span>
+        </div>
+        <div class="reservations-detail__row">
+          <span class="reservations-detail__label">Durée</span>
+          <span class="reservations-detail__value">${reservation.durationMinutes} min</span>
+        </div>
+        <div class="reservations-detail__row">
+          <span class="reservations-detail__label">Prix</span>
+          <span class="reservations-detail__value">${reservation.price.toFixed(2)}€</span>
+        </div>
+      </div>
+    `;
+
+    refs.detailActions.innerHTML = `
+      <button class="reservations-button reservations-button--danger" type="button" id="reservation-cancel-button">
+        Annuler la réservation
+      </button>
+    `;
+
+    const cancelButton = document.getElementById("reservation-cancel-button");
+
+    cancelButton.addEventListener("click", async () => {
+      const result = await window.ReservationsService.cancelNextReservation();
+
+      if (!result.ok) {
+        window.alert(result.message);
+        return;
+      }
+
+      closeModal();
+      await refreshData();
+      renderMainView();
+    });
+  }
+
+  async function updateBookingSlots() {
+    if (!state.selectedDateKey || !isCurrentOrFutureDate(state.selectedDateKey)) {
+      state.bookingSlots = [];
+      state.selectedTime = null;
+      return;
+    }
+
+    state.bookingSlots = await window.ReservationsService.getTimeSlotsForDate(state.selectedDateKey);
+
+    if (state.selectedTime) {
+      const match = state.bookingSlots.find((slot) => slot.time === state.selectedTime && !slot.isBooked && !slot.isPast);
+
+      if (!match) {
+        state.selectedTime = null;
+      }
+    }
+  }
+
+  function renderBookingCalendar() {
+    const visibleMonth = state.bookingMonthDate;
+    const firstDay = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1).getDay();
+    const lastDay = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 0).getDate();
+    const todayKey = getTodayKey();
+
+    refs.bookingMonthLabel.textContent = formatMonthYear(visibleMonth);
+    refs.bookingPrevMonth.disabled = startOfMonth(visibleMonth).getTime() <= startOfMonth(new Date()).getTime();
+
+    const cells = [];
+
+    for (let index = 0; index < firstDay; index += 1) {
+      cells.push('<div class="reservations-picker__calendar-empty" aria-hidden="true"></div>');
+    }
+
+    for (let day = 1; day <= lastDay; day += 1) {
+      const date = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), day);
+      const dateKey = toDateKey(date);
+      const isDisabled = compareDateKeys(dateKey, todayKey) < 0;
+      const isSelected = state.selectedDateKey === dateKey;
+      const isToday = dateKey === todayKey;
+
+      const classes = ["reservations-picker__day"];
+
+      if (isToday && !isSelected) {
+        classes.push("is-today");
+      }
+
+      if (isSelected) {
+        classes.push("is-selected");
+      }
+
+      if (isDisabled) {
+        classes.push("is-disabled");
+      }
+
+      cells.push(`
+        <button
+          type="button"
+          class="${classes.join(" ")}"
+          data-booking-date="${dateKey}"
+          ${isDisabled ? "disabled" : ""}
+        >
+          ${day}
+        </button>
+      `);
+    }
+
+    refs.bookingCalendarGrid.innerHTML = cells.join("");
+  }
+
+  function renderBookingSlots() {
+    if (!state.selectedDateKey) {
+      refs.bookingTimeSlots.innerHTML = `
+        <div class="reservations-time-slots__empty">
+          Sélectionnez une date pour voir les horaires disponibles.
+        </div>
+      `;
+      refs.bookingConfirmButton.disabled = true;
+      return;
+    }
+
+    refs.bookingTimeSlots.innerHTML = state.bookingSlots.map((slot) => {
+      const classes = ["reservations-time-slots__item"];
+
+      if (slot.isBooked) {
+        classes.push("is-booked");
+      } else if (slot.isPast) {
+        classes.push("is-disabled");
+      } else if (state.selectedTime === slot.time) {
+        classes.push("is-selected");
+      }
+
+      return `
+        <button
+          type="button"
+          class="${classes.join(" ")}"
+          data-booking-time="${slot.time}"
+          ${slot.isBooked || slot.isPast ? "disabled" : ""}
+        >
+          ${slot.time}
+        </button>
+      `;
+    }).join("");
+
+    refs.bookingConfirmButton.disabled = !state.selectedTime;
+  }
+
+  async function renderBookingModal() {
+    renderBookingCalendar();
+    await updateBookingSlots();
+    renderBookingSlots();
+  }
+
+  function renderMainView() {
+    renderSummaryCard();
+    renderPreviewCalendar();
+    renderDemandChart();
+    renderHistory();
+
+    if (state.activeModal === "detail") {
+      renderDetailModal();
+    }
+
+    if (state.activeModal === "booking") {
+      renderBookingModal();
+    }
+  }
+
+  function openModal(modalName) {
+    state.activeModal = modalName;
+    refs.modalLayer.hidden = false;
+    document.body.classList.add("reservations-modal-open");
+
+    refs.detailModal.hidden = modalName !== "detail";
+    refs.bookingModal.hidden = modalName !== "booking";
+  }
+
+  function closeModal() {
+    state.activeModal = null;
+    refs.modalLayer.hidden = true;
+    refs.detailModal.hidden = true;
+    refs.bookingModal.hidden = true;
+    document.body.classList.remove("reservations-modal-open");
+  }
+
+  async function openDetailModal() {
+    renderDetailModal();
+    openModal("detail");
+  }
+
+  async function openBookingModal(dateKey) {
+    if (dateKey && isCurrentOrFutureDate(dateKey)) {
+      state.selectedDateKey = dateKey;
+    } else if (!state.selectedDateKey || !isCurrentOrFutureDate(state.selectedDateKey)) {
+      state.selectedDateKey = getTodayKey();
+    }
+
+    state.selectedTime = null;
+    state.bookingMonthDate = startOfMonth(dateKeyToDate(state.selectedDateKey));
+
+    if (state.bookingMonthDate.getTime() < startOfMonth(new Date()).getTime()) {
+      state.bookingMonthDate = startOfMonth(new Date());
+    }
+
+    openModal("booking");
+    await renderBookingModal();
+  }
+
+  async function changeBookingMonth(delta) {
+    const nextMonth = addMonths(state.bookingMonthDate, delta);
+    const currentMonth = startOfMonth(new Date());
+
+    if (nextMonth.getTime() < currentMonth.getTime()) {
+      return;
+    }
+
+    state.bookingMonthDate = nextMonth;
+    await renderBookingModal();
+  }
+
+  async function handleBookingDateSelection(dateKey) {
+    if (!isCurrentOrFutureDate(dateKey)) {
+      return;
+    }
+
+    state.selectedDateKey = dateKey;
+    state.selectedTime = null;
+    await renderBookingModal();
+  }
+
+  function handleBookingTimeSelection(time) {
+    const selectedSlot = state.bookingSlots.find(
+      (slot) => slot.time === time && !slot.isBooked && !slot.isPast
+    );
+
+    if (!selectedSlot) {
+      return;
+    }
+
+    state.selectedTime = time;
+    renderBookingSlots();
+  }
+
+  async function confirmBooking() {
+    if (!state.selectedDateKey || !state.selectedTime) {
+      return;
+    }
+
+    const result = await window.ReservationsService.reserveSlot(state.selectedDateKey, state.selectedTime);
+
+    if (!result.ok) {
+      window.alert(result.message);
+      await refreshData();
+      renderMainView();
+      await renderBookingModal();
+      return;
+    }
+
+    closeModal();
+    await refreshData();
+    renderMainView();
+  }
+
+  function handlePreviewCalendarClick(event) {
+    const button = event.target.closest("[data-preview-date]");
+
+    if (button) {
+      openBookingModal(button.dataset.previewDate);
+      return;
+    }
+
+    openBookingModal(state.selectedDateKey);
+  }
+
+  function handleKeyboardNavigation(event) {
+    if (state.activeModal !== "booking") {
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      changeBookingMonth(-1);
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      changeBookingMonth(1);
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeModal();
+    }
+  }
+
+  function setupSwipeNavigation() {
+    let startX = 0;
+    let isPointerActive = false;
+
+    refs.bookingSwipeSurface.addEventListener("pointerdown", (event) => {
+      isPointerActive = true;
+      startX = event.clientX;
+    });
+
+    refs.bookingSwipeSurface.addEventListener("pointerup", (event) => {
+      if (!isPointerActive || state.activeModal !== "booking") {
+        return;
+      }
+
+      const deltaX = event.clientX - startX;
+      isPointerActive = false;
+
+      if (Math.abs(deltaX) < 45) {
+        return;
+      }
+
+      if (deltaX < 0) {
+        changeBookingMonth(1);
+      } else {
+        changeBookingMonth(-1);
+      }
+    });
+
+    refs.bookingSwipeSurface.addEventListener("pointercancel", () => {
+      isPointerActive = false;
+    });
+  }
+
+  function bindEvents() {
+    refs.summaryTrigger.addEventListener("click", openDetailModal);
+    refs.summaryTrigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openDetailModal();
+      }
+    });
+
+    refs.calendarTrigger.addEventListener("click", handlePreviewCalendarClick);
+    refs.calendarTrigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openBookingModal(state.selectedDateKey);
+      }
+    });
+
+    refs.modalLayer.addEventListener("click", (event) => {
+      if (event.target.matches("[data-close-modal]")) {
+        closeModal();
+      }
+    });
+
+    refs.bookingPrevMonth.addEventListener("click", () => {
+      changeBookingMonth(-1);
+    });
+
+    refs.bookingNextMonth.addEventListener("click", () => {
+      changeBookingMonth(1);
+    });
+
+    refs.bookingCalendarGrid.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-booking-date]");
+
+      if (!button) {
+        return;
+      }
+
+      handleBookingDateSelection(button.dataset.bookingDate);
+    });
+
+    refs.bookingTimeSlots.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-booking-time]");
+
+      if (!button) {
+        return;
+      }
+
+      handleBookingTimeSelection(button.dataset.bookingTime);
+    });
+
+    refs.bookingConfirmButton.addEventListener("click", confirmBooking);
+
+    if (window.reservationsKeydownHandler) {
+      document.removeEventListener("keydown", window.reservationsKeydownHandler);
+    }
+
+    window.reservationsKeydownHandler = handleKeyboardNavigation;
+    document.addEventListener("keydown", window.reservationsKeydownHandler);
+
+    setupSwipeNavigation();
+  }
+
+  async function initReservationsView() {
     const view = document.getElementById("reservations-view");
 
     if (!view) {
       return;
     }
 
+    cacheElements();
+
     if (window.reservationsCountdownInterval) {
       clearInterval(window.reservationsCountdownInterval);
     }
 
-    reservationsState = buildReservationsState();
+    await window.ReservationsService.init();
+    await refreshData();
 
-    renderCountdown();
-    renderCalendar();
-    renderDemandChart();
-    renderHistory();
+    state.previewMonthDate = startOfMonth(new Date());
+    state.bookingMonthDate = startOfMonth(new Date());
+    state.selectedDateKey = getInitialSelectedDateKey();
+    state.selectedTime = null;
+    state.bookingSlots = [];
 
-    window.reservationsCountdownInterval = setInterval(renderCountdown, 1000);
+    bindEvents();
+    renderMainView();
+
+    window.reservationsCountdownInterval = setInterval(() => {
+      if (!document.getElementById("reservations-view")) {
+        clearInterval(window.reservationsCountdownInterval);
+        return;
+      }
+
+      renderSummaryCard();
+    }, 1000);
   }
 
   window.initReservationsView = initReservationsView;

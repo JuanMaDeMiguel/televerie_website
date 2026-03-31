@@ -4,7 +4,13 @@
   </header>
 
   <div class="reservations-view__content">
-    <article class="reservations-card reservations-card--highlight">
+    <article
+      class="reservations-card reservations-card--highlight reservations-card--clickable"
+      id="reservation-summary-trigger"
+      role="button"
+      tabindex="0"
+      aria-haspopup="dialog"
+    >
       <p class="reservations-card__eyebrow">
         <span class="reservations-card__eyebrow-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
@@ -12,20 +18,26 @@
             <path d="M12 7.5V12L15 13.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </span>
-        <span>Ton prochain tour dans</span>
+        <span id="reservations-summary-label">Ton prochain tour dans</span>
       </p>
 
-      <div class="reservations-countdown">
+      <div class="reservations-countdown" id="reservations-countdown">
         <span class="reservations-countdown__value" id="reservations-countdown-value">10:30</span>
-        <span class="reservations-countdown__unit">heures</span>
+        <span class="reservations-countdown__unit" id="reservations-countdown-unit">heures</span>
       </div>
 
       <p class="reservations-card__meta" id="reservations-next-info">
-        Jeudi 20 Mars, 14:00 - Machine L1
+        Jeudi 2 Avril, 14:00 - Machine L1
       </p>
     </article>
 
-    <article class="reservations-card">
+    <article
+      class="reservations-card reservations-card--clickable"
+      id="reservation-calendar-trigger"
+      role="button"
+      tabindex="0"
+      aria-haspopup="dialog"
+    >
       <div class="reservations-card__header">
         <h2 class="reservations-card__title">Réserver un tour</h2>
         <span class="reservations-card__subtitle" id="reservations-calendar-month"></span>
@@ -81,5 +93,106 @@
 
       <div class="reservations-history" id="reservations-history-list"></div>
     </article>
+  </div>
+
+  <div class="reservations-modal-layer" id="reservations-modal-layer" hidden>
+    <div class="reservations-modal-layer__backdrop" data-close-modal></div>
+
+    <section
+      class="reservations-modal"
+      id="reservation-detail-modal"
+      hidden
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="reservation-detail-title"
+    >
+      <div class="reservations-modal__handle" aria-hidden="true"></div>
+
+      <div class="reservations-modal__header">
+        <h2 class="reservations-modal__title" id="reservation-detail-title">Détails de la réservation</h2>
+        <button class="reservations-modal__close" type="button" data-close-modal aria-label="Fermer">×</button>
+      </div>
+
+      <div class="reservations-detail" id="reservations-detail-content"></div>
+
+      <div class="reservations-modal__footer" id="reservations-detail-actions"></div>
+    </section>
+
+    <section
+      class="reservations-modal reservations-modal--booking"
+      id="reservation-booking-modal"
+      hidden
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="reservation-booking-title"
+    >
+      <div class="reservations-modal__handle" aria-hidden="true"></div>
+
+      <div class="reservations-modal__header">
+        <h2 class="reservations-modal__title" id="reservation-booking-title">Réserver un créneau</h2>
+        <button class="reservations-modal__close" type="button" data-close-modal aria-label="Fermer">×</button>
+      </div>
+
+      <div class="reservations-modal__body">
+        <div class="reservations-picker">
+          <h3 class="reservations-picker__title">Choisir une date</h3>
+
+          <div class="reservations-picker__calendar" id="reservation-booking-swipe-surface">
+            <div class="reservations-picker__month-row">
+              <button
+                class="reservations-picker__month-button"
+                id="booking-prev-month"
+                type="button"
+                aria-label="Mois précédent"
+              >
+                ‹
+              </button>
+
+              <span class="reservations-picker__month-label" id="booking-month-label">Mars 2026</span>
+
+              <button
+                class="reservations-picker__month-button"
+                id="booking-next-month"
+                type="button"
+                aria-label="Mois suivant"
+              >
+                ›
+              </button>
+            </div>
+
+            <div class="reservations-picker__weekdays" aria-hidden="true">
+              <span>D</span>
+              <span>L</span>
+              <span>M</span>
+              <span>M</span>
+              <span>J</span>
+              <span>V</span>
+              <span>S</span>
+            </div>
+
+            <div class="reservations-picker__calendar-grid" id="booking-calendar-grid"></div>
+          </div>
+        </div>
+
+        <div class="reservations-picker">
+          <h3 class="reservations-picker__title">Choisir une heure</h3>
+          <div class="reservations-time-slots" id="booking-time-slots"></div>
+        </div>
+      </div>
+
+      <div class="reservations-modal__footer">
+        <button class="reservations-button reservations-button--ghost" type="button" data-close-modal>
+          Fermer
+        </button>
+        <button
+          class="reservations-button reservations-button--primary"
+          type="button"
+          id="booking-confirm-button"
+          disabled
+        >
+          OK
+        </button>
+      </div>
+    </section>
   </div>
 </section>

@@ -1,104 +1,107 @@
-// Diccionario para actuar como caché en memoria
 const viewCache = {};
 
-// Mapeo de los índices de los botones a sus respectivos archivos HTML
-const routes = {
-  0: 'src/views/home.html',
-  1: 'src/views/ranking.html',
-  2: 'src/views/reservations.html',
-  3: 'src/views/profile.html'
-};
+const routes = [
+  "src/views/home.html",
+  "src/views/ranking.html",
+  "src/views/reservations.html",
+  "src/views/profile.html"
+];
 
-document.addEventListener("DOMContentLoaded", () => {
-  // 1. Cargar el menú de navegación primero
-  fetch('src/bottom-nav.html')
-    .then(response => {
-      if (!response.ok) throw new Error('Error al cargar la barra de navegación');
-      return response.text();
-    })
-    .then(html => {
-      document.getElementById('bottom-nav-placeholder').innerHTML = html;
-      initRouter();
-    })
-    .catch(error => console.error('Fallo en la carga del componente:', error));
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const response = await fetch("src/bottom-nav.html");
+
+    if (!response.ok) {
+      throw new Error("Error loading bottom navigation");
+    }
+
+    const html = await response.text();
+    document.getElementById("bottom-nav-placeholder").innerHTML = html;
+
+    initRouter();
+    await loadView(routes[0]);
+    setActiveNav(0);
+  } catch (error) {
+    console.error(error);
+    document.getElementById("app-view-placeholder").innerHTML = "<h2>Erreur de chargement</h2>";
+  }
 });
 
 function initRouter() {
-  const navItems = document.querySelectorAll('.bottom-nav__item');
-  const activeClass = 'bottom-nav__item--active';
+  const navItems = document.querySelectorAll(".bottom-nav__item");
 
-  // Asignar eventos a cada botón
   navItems.forEach((item, index) => {
-    item.addEventListener('click', () => {
-      // Evitar recargar si ya estamos en esta vista
-      if (item.classList.contains(activeClass)) return;
+    item.addEventListener("click", async () => {
+      if (item.classList.contains("bottom-nav__item--active")) {
+        return;
+      }
 
-      // Actualizar UI del menú
-      navItems.forEach(nav => nav.classList.remove(activeClass));
-      item.classList.add(activeClass);
-
-      // Cargar la vista correspondiente
-      loadView(routes[index]);
+      setActiveNav(index);
+      await loadView(routes[index]);
     });
   });
-
-  // Cargar la vista inicial por defecto (Accueil)
-  loadView(routes[0]);
 }
 
+function setActiveNav(activeIndex) {
+  const navItems = document.querySelectorAll(".bottom-nav__item");
 
+  navItems.forEach((item, index) => {
+    item.classList.toggle("bottom-nav__item--active", index === activeIndex);
+  });
+}
 
-function loadView(path) {
-  const viewContainer = document.getElementById('app-view-placeholder');
+async function loadView(path) {
+  const viewContainer = document.getElementById("app-view-placeholder");
 
-  // Revisar si la vista ya está en la caché
-  if (viewCache[path]) {
-    viewContainer.innerHTML = viewCache[path];
-  
+  cleanupBeforeViewChange();
 
-      // Llamada al inicializador específico de la vista
-    if (path.includes('ranking.html') && typeof initRanking === 'function') {
-      initRanking();
+  try {
+    if (!viewCache[path]) {
+      const response = await fetch(path);
+
+      if (!response.ok) {
+        throw new Error(`Error loading view: ${path}`);
+      }
+
+      viewCache[path] = await response.text();
     }
-    
-      triggerViewInit(path);
 
-    return;
+    viewContainer.innerHTML = viewCache[path];
+    triggerViewInit(path);
+  } catch (error) {
+    console.error(error);
+    viewContainer.innerHTML = "<h2>Erreur de chargement</h2>";
+  }
+}
+
+function cleanupBeforeViewChange() {
+  document.body.classList.remove("reservations-modal-open");
+
+  if (window.reservationsCountdownInterval) {
+    clearInterval(window.reservationsCountdownInterval);
+    window.reservationsCountdownInterval = null;
   }
 
-  // Si no está en caché, hacemos el fetch
-  fetch(path)
-    .then(response => {
-      if (!response.ok) throw new Error(`Error al cargar la vista: ${path}`);
-      return response.text();
-    })
-    .then(html => {
-      // Guardar en caché y mostrar
-      viewCache[path] = html;
-      viewContainer.innerHTML = html;
-    })
-    .catch(error => {
-      console.error(error);
-      viewContainer.innerHTML = '<h2>Erreur de chargement</h2>';
-    });
+  if (window.reservationsKeydownHandler) {
+    document.removeEventListener("keydown", window.reservationsKeydownHandler);
+    window.reservationsKeydownHandler = null;
+  }
 }
 
 function triggerViewInit(path) {
-  // Inicializar el JS específico de la vista de perfil
-  if (path === 'src/views/profile.html' && typeof initProfileView === 'function') {
-    initProfileView();
-  }
-  if (path === 'src/views/reservations.html' && typeof initReservationsView === 'function') {
-    initReservationsView();
-  }
-  if (path === 'src/views/ranking.html' && typeof initRankingView === 'function') {
-    initRankingView();
-  }
-  if (path === 'src/views/home.html' && typeof initHomeView === 'function') {
+  if (path === "src/views/home.html" && typeof initHomeView === "function") {
     initHomeView();
   }
 
-  // A medida que crees los archivos home.js, ranking.js, etc.,
-  // irás agregando aquí sus respectivas llamadas, por ejemplo:
-  // if (path === 'src/views/home.html' && typeof initHomeView === 'function') { initHomeView(); }
+  if (path === "src/views/ranking.html" && typeof initRankingView === "function") {
+    initRankingView();
+  }
+
+  if (path === "src/views/profile.html" && typeof initProfileView === "function") {
+    initProfileView();
+  }
+
+  if (path === "src/views/reservations.html" && typeof initReservationsView === "function") {
+    initReservationsView();
+  }
 }

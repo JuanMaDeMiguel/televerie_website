@@ -764,6 +764,14 @@
     bindEvents();
     renderAll();
 
+    if (window.openBookingModalFromHome) {
+      // open modal with today's date
+      openBookingModal(window.ReservationsService.todayKey());
+      
+      // turn off flag to avoid opening the modal if we click on reservations
+      window.openBookingModalFromHome = false; 
+    }
+
     window.reservationsCountdownInterval = setInterval(() => {
       if (!document.getElementById("reservations-view")) {
         clearInterval(window.reservationsCountdownInterval);

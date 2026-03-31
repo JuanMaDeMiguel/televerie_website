@@ -1,4 +1,10 @@
 let homeTimerInterval;
+const homeMachineEndTimes = new Map();
+
+function getMachineKey(machine, index) {
+  const machineName = machine.querySelector('.machine-name')?.textContent?.trim();
+  return machineName || `machine-${index}`;
+}
 
 function getRandomInitialDurationMs() {
   const randomMinutes = Math.floor(Math.random() * 120) + 1; // 1-120 minutos
@@ -64,11 +70,22 @@ function updateTimers() {
 function initHomeView() {
     console.log("Home view initialized!");
 
-  // reiniciamos timers de máquinas ocupadas con valores aleatorios al cargar la vista
+  // mantenemos los timers al navegar entre pestañas y solo creamos uno nuevo
+  // cuando la máquina no tenga un end-time guardado en memoria para esta sesión
   const occupiedMachines = document.querySelectorAll('.machine-card.en-cours');
-  occupiedMachines.forEach(machine => {
+  occupiedMachines.forEach((machine, index) => {
+    const machineKey = getMachineKey(machine, index);
+    const savedEndTime = homeMachineEndTimes.get(machineKey);
+
+    if (savedEndTime) {
+      machine.dataset.endTime = new Date(savedEndTime).toISOString();
+      return;
+    }
+
     const randomDurationMs = getRandomInitialDurationMs();
-    machine.dataset.endTime = new Date(Date.now() + randomDurationMs).toISOString();
+    const newEndTime = Date.now() + randomDurationMs;
+    homeMachineEndTimes.set(machineKey, newEndTime);
+    machine.dataset.endTime = new Date(newEndTime).toISOString();
   });
 
     // animación de los anillos de progreso al cargar la vista
@@ -91,12 +108,15 @@ function initHomeView() {
     updateTimers();
     homeTimerInterval = setInterval(updateTimers, 1000);
 
-    // boton de reserva que simula click en la pestaña de reservas
+    // reserve button
     const reserveBtn = document.querySelector('.btn-primary-pill');
-    if (reserveBtn) {
-        reserveBtn.addEventListener('click', () => {
-            const navItems = document.querySelectorAll('.bottom-nav__item');
-            if(navItems.length > 2) navItems[2].click();
-        });
-    }
-}
+      if (reserveBtn) {
+            reserveBtn.addEventListener('click', () => {
+                // global flag a reservations.js para saber que venimos de home y mostrar el modal de reserva automáticamente
+                window.openBookingModalFromHome = true;
+
+                // simulacion de click en la seccion de reservas
+                const navItems = document.querySelectorAll('.bottom-nav__item');
+                if(navItems.length > 2) navItems[2].click();
+            });
+        }}

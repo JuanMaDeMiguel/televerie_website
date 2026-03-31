@@ -52,6 +52,7 @@ function loadView(path) {
   // Revisar si la vista ya está en la caché
   if (viewCache[path]) {
     viewContainer.innerHTML = viewCache[path];
+    triggerViewInit(path);
     return;
   }
 
@@ -65,9 +66,21 @@ function loadView(path) {
       // Guardar en caché y mostrar
       viewCache[path] = html;
       viewContainer.innerHTML = html;
+      triggerViewInit(path);
     })
     .catch(error => {
       console.error(error);
       viewContainer.innerHTML = '<h2>Erreur de chargement</h2>';
     });
+}
+
+function triggerViewInit(path) {
+  // Inicializar el JS específico de la vista de perfil
+  if (path === 'src/views/profile.html' && typeof initProfileView === 'function') {
+    initProfileView();
+  }
+
+  // A medida que crees los archivos home.js, ranking.js, etc.,
+  // irás agregando aquí sus respectivas llamadas, por ejemplo:
+  // if (path === 'src/views/home.html' && typeof initHomeView === 'function') { initHomeView(); }
 }

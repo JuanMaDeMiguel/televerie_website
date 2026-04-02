@@ -1,6 +1,7 @@
 .profile-wrapper {
     position: relative;
     width: 100%;
+    overflow: hidden;
 }
 
 .profile-view {
@@ -9,6 +10,7 @@
     flex-direction: column;
     gap: var(--space-6);
     animation: fadeIn 0.2s ease-in-out;
+    will-change: transform, opacity;
 }
 
 .profile-view--hidden {

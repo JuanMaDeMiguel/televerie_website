@@ -1,0 +1,39 @@
+{
+  "notifications": [
+    {
+      "id": 1,
+      "type": "error",
+      "title": "Machine L3 Hors Service",
+      "message": "La machine L3 est actuellement en maintenance suite à un problème technique. Nous nous excusons pour la gêne occasionnée.",
+      "date": "2026-03-31T08:30:00"
+    },
+    {
+      "id": 2,
+      "type": "success",
+      "title": "Nouvelle Laverie Ouverte !",
+      "message": "Découvrez notre nouvelle succursale au 42 Avenue de la République. 10 nouvelles machines vous y attendent.",
+      "date": "2026-03-28T14:15:00"
+    },
+    {
+      "id": 3,
+      "type": "info",
+      "title": "Mise à jour de l'application",
+      "message": "La version 2.1 est en ligne ! Profitez d'une interface plus rapide et du nouveau système de réservation fluide.",
+      "date": "2026-03-25T10:00:00"
+    },
+    {
+      "id": 4,
+      "type": "warning",
+      "title": "Fermeture exceptionnelle",
+      "message": "Attention, la laverie fermera ses portes exceptionnellement à 20h ce dimanche en raison de travaux sur le réseau électrique.",
+      "date": "2026-03-20T09:00:00"
+    },
+    {
+      "id": 5,
+      "type": "info",
+      "title": "Nouveau service : Séchage express",
+      "message": "Les séchoirs S1 et S2 disposent désormais d'un mode ultra-rapide (15 min) pour les petites charges.",
+      "date": "2026-03-15T11:45:00"
+    }
+  ]
+}

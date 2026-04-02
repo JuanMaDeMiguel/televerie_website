@@ -16,6 +16,9 @@ async function initProfileView() {
   setupNavigation('btn-donnees', 'panel-donnees');
   setupNavigation('btn-paiement', 'panel-paiement');
   setupNavigation('btn-historique', 'panel-historique');
+  setupNavigation('btn-notifications', 'panel-notifications');
+  setupNavigation('btn-parametres', 'panel-parametres');
+  setupNavigation('btn-support', 'panel-support');
 
   // Botones de "Atrás"
   document.querySelectorAll('.profile-back-btn').forEach(btn => {
@@ -26,24 +29,34 @@ async function initProfileView() {
     });
   });
 
+  // Interactividad visual para los Toggles de Configuración
+  document.querySelectorAll('.toggle-switch').forEach(toggle => {
+    toggle.addEventListener('click', () => {
+      toggle.classList.toggle('active');
+    });
+  });
+
   try {
-    const [profileRes, reservationsRes] = await Promise.all([
+    const [profileRes, reservationsRes, notificationsRes] = await Promise.all([
       fetch('ressources/data/profile.json'),
-      fetch('ressources/data/reservations.json')
+      fetch('ressources/data/reservations.json'),
+      fetch('ressources/data/notifications.json')
     ]);
 
     const profileData = await profileRes.json();
     const reservationsData = await reservationsRes.json();
+    const notificationsData = await notificationsRes.json();
+
     const user = profileData.user;
 
-    // Renderizar Vista Principal
+    // Vista Principal
     document.getElementById('user-avatar').src = user.avatar;
     document.getElementById('user-name').textContent = `${user.firstName} ${user.lastName}`;
     document.getElementById('user-email').textContent = user.email;
     document.getElementById('user-phone').textContent = user.phone;
 
-    // Renderizar Panel: Données personnelles (Información Expandida)
-    const donneesHtml = `
+    // Panel: Données
+    document.getElementById('data-donnees-container').innerHTML = `
             <div class="profile-user__field"><b>Nom:</b> ${user.lastName}</div>
             <div class="profile-user__field"><b>Prénom:</b> ${user.firstName}</div>
             <div class="profile-user__field"><b>E-mail:</b> ${user.email}</div>
@@ -53,10 +66,9 @@ async function initProfileView() {
             <div class="profile-user__field"><b>Adresse:</b> ${user.address}</div>
             <div class="profile-user__field"><b>Membre depuis:</b> ${user.joinDate}</div>
         `;
-    document.getElementById('data-donnees-container').innerHTML = donneesHtml;
 
-    // Renderizar Panel: Moyens de paiement (Tarjetas Enmascaradas)
-    const paiementHtml = user.paymentMethods.map(card => {
+    // Panel: Paiement
+    document.getElementById('data-paiement-container').innerHTML = user.paymentMethods.map(card => {
       const masked = card.number.substring(0, 4) + ' •••• •••• ' + card.number.substring(card.number.length - 4);
       return `
                 <div class="payment-card">
@@ -69,15 +81,13 @@ async function initProfileView() {
                 </div>
             `;
     }).join('');
-    document.getElementById('data-paiement-container').innerHTML = paiementHtml;
 
-    // Renderizar Panel: Historique (24 Entradas)
-    const historiqueHtml = reservationsData.history.map(item => {
+    // Panel: Historique
+    document.getElementById('data-historique-container').innerHTML = reservationsData.history.map(item => {
       const dateObj = new Date(item.date);
       const formattedDate = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       const statusColor = item.status === 'done' ? 'var(--color-success)' : 'var(--color-danger)';
       const statusText = item.status === 'done' ? 'Terminé' : 'Annulé';
-
       return `
                 <div class="history-item">
                     <div class="history-item__left">
@@ -91,7 +101,19 @@ async function initProfileView() {
                 </div>
             `;
     }).join('');
-    document.getElementById('data-historique-container').innerHTML = historiqueHtml;
+
+    // Panel: Notifications
+    document.getElementById('data-notifications-container').innerHTML = notificationsData.notifications.map(notif => {
+      const dateObj = new Date(notif.date);
+      const formattedDate = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      return `
+                <div class="notif-card notif-card--${notif.type}">
+                    <div class="notif-title">${notif.title}</div>
+                    <div class="notif-message">${notif.message}</div>
+                    <div class="notif-date">${formattedDate}</div>
+                </div>
+            `;
+    }).join('');
 
   } catch (error) {
     console.error("Erreur lors du chargement des données du profil:", error);

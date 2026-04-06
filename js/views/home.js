@@ -141,4 +141,41 @@ function initHomeView() {
         if (mapCloseBtn) mapCloseBtn.addEventListener('click', closeMap);
         if (mapCloseBg) mapCloseBg.addEventListener('click', closeMap);
     }
+
+    // pop up del perfil
+    const avatarImgBtn = document.querySelector('.header-user .avatar');
+    const profileModal = document.getElementById('profile-modal');
+    const profileModalBg = document.getElementById('profile-modal-bg');
+    const goToProfileBtn = document.getElementById('go-to-profile-btn');
+
+    if (avatarImgBtn && profileModal) {
+        // cursor pointer para indicar que es clickeable
+        avatarImgBtn.style.cursor = 'pointer';
+
+        // abro el modal al hacer click en el avatar
+        avatarImgBtn.addEventListener('click', () => {
+            profileModal.hidden = false;
+        });
+
+        // cierro el modal al hacer click en el fondo
+        if (profileModalBg) {
+            profileModalBg.addEventListener('click', () => {
+                profileModal.hidden = true;
+            });
+        }
+
+        // boton ver mi perfil dentro del modal, que cierra el modal y simula click en la sección de perfil
+        if (goToProfileBtn) {
+            goToProfileBtn.addEventListener('click', () => {
+                // cierro el modal
+                profileModal.hidden = true;
+                
+                // simulo click en la sección de perfil
+                const navItems = document.querySelectorAll('.bottom-nav__item');
+                if (navItems.length > 3) {
+                    navItems[3].click();
+                }
+            });
+        }
+    }
 }

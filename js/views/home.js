@@ -110,13 +110,35 @@ function initHomeView() {
 
     // reserve button
     const reserveBtn = document.querySelector('.btn-primary-pill');
-      if (reserveBtn) {
-            reserveBtn.addEventListener('click', () => {
-                // global flag a reservations.js para saber que venimos de home y mostrar el modal de reserva automáticamente
-                window.openBookingModalFromHome = true;
+    if (reserveBtn) {
+        reserveBtn.addEventListener('click', () => {
+            // global flag a reservations.js para saber que venimos de home y mostrar el modal de reserva automáticamente
+            window.openBookingModalFromHome = true;
 
-                // simulacion de click en la seccion de reservas
-                const navItems = document.querySelectorAll('.bottom-nav__item');
-                if(navItems.length > 2) navItems[2].click();
-            });
-        }}
+            // simulacion de click en la seccion de reservas
+            const navItems = document.querySelectorAll('.bottom-nav__item');
+            if(navItems.length > 2) navItems[2].click();
+        });
+    }
+
+    // pop up del mapa
+    const mapBtn = document.querySelector('.location-map');
+    const mapModal = document.getElementById('map-modal');
+    const mapCloseBtn = document.getElementById('map-modal-close-btn');
+    const mapCloseBg = document.getElementById('map-modal-close-bg');
+
+    if (mapBtn && mapModal) {
+        // abrir modal
+        mapBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // evita que el enlace navegue a otra página
+            mapModal.hidden = false;
+        });
+
+        // función para cerrar el modal
+        const closeMap = () => { mapModal.hidden = true; };
+        
+        // cerrar modal al hacer click en el botón de cerrar o en el fondo
+        if (mapCloseBtn) mapCloseBtn.addEventListener('click', closeMap);
+        if (mapCloseBg) mapCloseBg.addEventListener('click', closeMap);
+    }
+}

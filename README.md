@@ -40,7 +40,7 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 * Concevoir la grille de cartes pour l'état des machines. Julian Andres RAYES CANO
 * Définir les classes CSS pour les 4 états : Libre, En cours, Réservée et Hors-ligne. Julian Andres RAYES CANO
 * Implémenter la logique JavaScript pour le chronomètre circulaire des machines "En cours". Facundo ARITO
-* Concevoir la fenêtre de "Réserver un Créneau". 
+* Concevoir la fenêtre de "Réserver un Créneau". Julian RAYES et Facundo ARITO
 
 **Phase 4 : Intégration de l'écran "Réservations"**
 * Intégrer la carte supérieure affichant le prochain tour de l'utilisateur avec un compte à rebours.
@@ -60,6 +60,10 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 
 **Phase 7 : Interactions et Tests**
 * Lier la navigation.
+
+**Extras**
+*Ajouter une carte geographique Julian RAYES
+*Ajouter un mini modal pre-profil Julian RAYES
 
 ## 👥 Équipe (Group 4 Laveries)
 * Facundo ARITO

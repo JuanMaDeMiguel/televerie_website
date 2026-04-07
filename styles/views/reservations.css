@@ -1,6 +1,43 @@
-.reservations-modal-layer[hidden],
-.reservations-modal[hidden] {
+.reservations-modal-layer[hidden] {
     display: none !important;
+}
+
+.reservations-modal-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding:
+        max(var(--space-4), env(safe-area-inset-top))
+        var(--space-4)
+        max(calc(5rem + env(safe-area-inset-bottom)), var(--space-4));
+    overflow-y: auto;
+}
+
+.reservations-modal-layer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.18);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.reservations-modal {
+    position: relative;
+    width: min(100%, 420px);
+    max-height: min(88dvh, 760px);
+    overflow: auto;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 28px;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+    z-index: 1;
+    padding: 10px var(--space-4) var(--space-4);
+    overscroll-behavior: contain;
 }
 
 body.reservations-modal-open {

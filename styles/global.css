@@ -100,19 +100,20 @@ button {
 }
 
 .app-view {
+  position: relative;
   width: 100%;
   animation: app-view-enter var(--view-enter-duration) ease-in-out both;
-  will-change: transform, opacity;
+  will-change: opacity, left;
 }
 
 @keyframes app-view-enter {
   from {
     opacity: 0;
-    transform: translateX(var(--view-enter-offset));
+    left: var(--view-enter-offset);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    left: 0;
   }
 }
 

@@ -1,6 +1,13 @@
 <div class="ranking app-view">
   <header class="ranking__header">
     <h1 class="ranking__title">Mon Score de Crédit</h1>
+    <button class="ranking__help-btn" id="ranking-help-btn" aria-label="Comment ça marche ?">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
+    </button>
   </header>
 
   <section class="ranking__score-section">
@@ -16,7 +23,7 @@
         </div>
       </div>
       <p class="ranking__score-message">
-        Excellent score ! Vous êtes dans le top 10% des utilisateurs.
+        Excellent score ! Vous êtes dans le top 10 des utilisateurs.
       </p>
     </div>
   </section>
@@ -26,4 +33,28 @@
     <div class="ranking__list" id="ranking-list">
       </div>
   </section>
+
+  <div class="ranking__policy-overlay" id="ranking-policy-overlay">
+    <div class="ranking__policy-sheet">
+      <h2 class="ranking__policy-title">Comment marche le score ?</h2>
+      <p class="ranking__policy-intro">Pour augmenter votre score au sein de la laverie, voici les règles à suivre :</p>
+      
+      <ul class="ranking__policy-list">
+        <li class="ranking__policy-item">
+          <strong>1. Honorez vos réservations</strong>
+          Si vous réservez une machine sans l'utiliser, votre créneau sera annulé et vous perdrez des points.
+        </li>
+        <li class="ranking__policy-item">
+          <strong>2. Soyez ponctuel</strong>
+          Récupérez votre linge dès que le programme se termine. Libérer la machine rapidement vous fait gagner des points !
+        </li>
+        <li class="ranking__policy-item">
+          <strong>3. Respectez le matériel</strong>
+          Laissez les équipements propres. Si un utilisateur signale un filtre de sèche-linge non vidé ou une machine sale après votre passage, vous serez pénalisé.
+        </li>
+      </ul>
+      
+      <button class="ranking__policy-close" id="ranking-policy-close">J'ai compris</button>
+    </div>
+  </div>
 </div>

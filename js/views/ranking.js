@@ -16,7 +16,7 @@ async function initRankingView() {
     award: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>`
   };
 
-  // 3. Lógica matemática dinámica (Buscamos al usuario con isUser: true)
+  // 3. Lógica matemática dinámica
   const currentUser = leaderboardData.find(u => u.isUser === true);
   const currentUserScore = currentUser ? currentUser.pts : 0;
   const maxScore = 10000; 
@@ -33,7 +33,7 @@ async function initRankingView() {
     animateScoreValue(scoreValue, 0, currentUserScore, 1000);
   }
 
-  // 4. Inyección del DOM
+  // 4. Inyección del DOM de la lista
   const listContainer = document.getElementById('ranking-list');
   if (listContainer) {
     listContainer.innerHTML = ''; 
@@ -59,12 +59,40 @@ async function initRankingView() {
           </div>
           <div class="ranking__item-info">
             <div class="ranking__item-name">${user.name}</div>
-            <div class="ranking__item-residence">Résidence Kergoat</div> </div>
+            <div class="ranking__item-residence">Résidence Kergoat</div>
+          </div>
           <div class="ranking__item-score">
-            ${user.pts.toLocaleString('en-US')} </div>
+            ${user.pts.toLocaleString('en-US')} 
+          </div>
         </div>
       `;
       listContainer.insertAdjacentHTML('beforeend', itemHTML);
+    });
+  }
+
+  // 5. Lógica del Bottom Sheet (Políticas del Ranking)
+  const helpBtn = document.getElementById('ranking-help-btn');
+  const policyOverlay = document.getElementById('ranking-policy-overlay');
+  const closeBtn = document.getElementById('ranking-policy-close');
+
+  if (helpBtn && policyOverlay && closeBtn) {
+    const activeClass = 'ranking__policy-overlay--active';
+
+    // Abrir modal
+    helpBtn.addEventListener('click', () => {
+      policyOverlay.classList.add(activeClass);
+    });
+
+    // Cerrar modal con el botón "J'ai compris"
+    closeBtn.addEventListener('click', () => {
+      policyOverlay.classList.remove(activeClass);
+    });
+
+    // Cerrar modal tocando fuera de la hoja blanca (en el overlay oscuro)
+    policyOverlay.addEventListener('click', (event) => {
+      if (event.target === policyOverlay) {
+        policyOverlay.classList.remove(activeClass);
+      }
     });
   }
 }
@@ -76,7 +104,6 @@ function animateScoreValue(element, start, end, duration) {
     if (!startTimestamp) startTimestamp = timestamp;
     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
     
-    // Formateamos visualmente en el DOM, no en el cálculo matemático
     element.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('en-US');
     
     if (progress < 1) {

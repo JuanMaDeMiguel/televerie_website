@@ -196,3 +196,152 @@
 .ranking__item--current .ranking__item-score {
   color: var(--color-bg-surface);
 }
+
+/* Modificación al header para alinear el nuevo botón */
+.ranking__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* El resto de tus estilos de header se mantienen igual */
+  background-color: var(--color-bg-surface);
+  padding-top: max(var(--space-8), env(safe-area-inset-top)); 
+  padding-bottom: var(--space-6);
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ranking__help-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-app);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ranking__help-btn:active {
+  background-color: var(--color-border-medium);
+  color: var(--color-text-secondary);
+  transform: scale(0.95);
+}
+
+.ranking__help-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================
+   Bottom Sheet (Popup de Políticas)
+   ========================================= */
+
+.ranking__policy-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Oscurecemos un poco más para centrar la atención */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  
+  /* CAMBIO CLAVE: Centrado Flexbox */
+  display: flex;
+  justify-content: center; /* Centrado horizontal */
+  align-items: center;     /* Centrado vertical */
+  padding: var(--space-6); /* Margen de seguridad para que no toque los bordes en pantallas pequeñas */
+  
+  /* Oculto por defecto (Mantenemos lógica de fundido) */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.ranking__policy-sheet {
+  /* CAMBIO CLAVE: Comportamiento de ventana */
+  width: 100%;
+  max-width: 400px; /* Ancho máximo para que no se vea gigante en tablets/escritorio */
+  background-color: var(--color-bg-surface);
+  
+  /* CAMBIO CLAVE: Bordes redondeados completos */
+  border-radius: 28px; 
+  
+  /* Ajuste de padding: Estandarizado, ya no necesitamos el extra bottom de iOS */
+  padding: var(--space-8) var(--space-6);
+  
+  /* Sombra más pronunciada para dar efecto de elevación central */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  
+  /* CAMBIO CLAVE: Animación de escalado sutil (Aparece desde el centro) */
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efecto "back" sutil al aparecer */
+}
+
+/* Clases dinámicas añadidas por JS */
+.ranking__policy-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ranking__policy-overlay--active .ranking__policy-sheet {
+  /* CAMBIO CLAVE: Escala normal al estar activo */
+  transform: scale(1);
+}
+
+/* --- Resto de estilos internos del modal (Mantenemos igual) --- */
+
+.ranking__policy-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+  text-align: center; /* Centramos el título también */
+}
+
+.ranking__policy-intro {
+  font-size: var(--text-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+  text-align: center; /* Centramos la intro */
+}
+
+.ranking__policy-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.ranking__policy-item {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  background-color: var(--color-bg-app);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.ranking__policy-item strong {
+  display: block;
+  font-size: var(--text-md);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.ranking__policy-close {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-md);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.ranking__policy-close:active {
+  background-color: var(--color-primary-hover, #0052CC);
+  transform: scale(0.98);
+}

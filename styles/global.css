@@ -51,6 +51,9 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
+  /* Transitions */
+  --view-enter-duration: 0.22s;
+  --view-enter-offset: 10px;
 }
 
 * {
@@ -88,4 +91,33 @@ button {
 
 *::-webkit-scrollbar {
     display: none;             /* Para Chrome, Safari, Opera y navegadores móviles */
+}
+
+#app-view-placeholder {
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+.app-view {
+  width: 100%;
+  animation: app-view-enter var(--view-enter-duration) ease-in-out both;
+  will-change: transform, opacity;
+}
+
+@keyframes app-view-enter {
+  from {
+    opacity: 0;
+    transform: translateX(var(--view-enter-offset));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-view {
+    animation: none;
+  }
 }

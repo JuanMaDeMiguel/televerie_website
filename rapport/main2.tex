@@ -31,121 +31,16 @@
     language=Java % Usamos Java como base visual para JS
 }
 
-\title{\textbf{Rapport de Développement Web : Application Televerie}}
-\author{
-    \textbf{Projet réalisé par :} \\
-    Facundo ARITO, Juan BAUDINO, Juan DE MIGUEL, Julian RAYES \\
-    \textbf{Enseignant :} Sébastien KUBICKI \\
-    \textbf{École Nationale d'Ingénieurs de Brest (ENIB)}
-}
+\title{\textbf{Page d'Accueil (Home)}}
+\author{}
 \date{}
 
 \begin{document}
 
 \maketitle
 \thispagestyle{empty} % <-- Saca el número de la primera página (la del título)
-\pagestyle{empty}     % <-- Saca el número de todas las páginas suivantes
+\pagestyle{empty}     % <-- Saca el número de todas las páginas siguientes
 
-\section*{Introduction Générale}
-La société prestataire en charge des équipements de laverie des résidences CROUS de Brest nous a contactés pour résoudre un problème d'organisation majeur dans leurs locaux. Ce document s'inscrit dans la continuité de notre précédent rapport axé sur la conception centrée utilisateur (création des personas, idéation, wireframes, maquettes et prototype). 
-
-L'objectif de ce nouveau rapport est de présenter la programmation technique du Frontend de l'application "Televerie". Nous y détaillerons la traduction de nos maquettes en code fonctionnel, en utilisant les langages web standards : HTML, CSS et JavaScript.
-
-\section*{Infrastructure et Organisation du Projet}
-La mise en place du projet a commencé par la création d'un dépôt structuré de manière modulaire. L'objectif est de séparer clairement les differentes responsabilités de l'application pour faciliter le développement. Voici l'arborescence actuelle du projet avec ses composants principaux :
-
-\begin{verbatim}
-.
-|-- icons/
-|-- img/
-|   `-- profile_pics/
-|-- index.html
-|-- js/ (Logique de fonctionnement et scripts)
-|   |-- app.js (Système de routage global)
-|   |-- services/
-|   `-- views/ (Initialisation des écrans)
-|-- rapport/ (Documentation technique)
-|-- README.md
-|-- ressources/
-|   `-- data/ (Base de données locale JSON)
-|-- src/ (Fragments HTML et composants)
-|   |-- bottom-nav.html
-|   `-- views/ (Fichiers HTML des vues)
-`-- styles/ (Feuilles de style CSS)
-    |-- bottom-nav.css
-    |-- global.css
-    `-- views/
-\end{verbatim}
-
-\section*{Comment lancer l'application}
-Pour tester l'application "Televerie" sur votre ordinateur, plusieurs méthodes sont possibles. Veuillez suivre ces étapes selon la configuration de votre machine :
-
-\subsection*{Méthode 1 : Ouverture directe}
-La méthode la plus simple consiste à faire un double-clic sur le fichier \texttt{index.html}. Cela ouvrira l'application directement dans votre navigateur par défaut.
-
-\subsection*{Méthode 2 : Configuration sur Firefox}
-Si la première méthode ne fonctionne pas (parfois à cause des sécurités du navigateur bloquant les scripts locaux), nous recommandons d'utiliser Firefox :
-\begin{itemize}
-    \item Ouvrez Firefox et tapez \texttt{about:config} dans la barre d'adresse.
-    \item Acceptez l'avertissement de sécurité.
-    \item Cherchez le paramètre \texttt{privacy.file\_unique\_origin}.
-    \item Changez sa valeur de \texttt{true} à \texttt{false}.
-    \item Rechargez la page \texttt{index.html}.
-\end{itemize}
-
-% --- IMAGEN FIREFOX ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{firefox.png}
-    \caption{Configuration du paramètre de confidentialité sur Firefox.}
-\end{figure}
-
-\subsection*{Méthode 3 : Lancer un serveur local (Python)}
-Si les méthodes précédentes échouent, vous pouvez simuler un environnement de serveur web local via le terminal :
-\begin{itemize}
-    \item Ouvrez un terminal (ou l'invite de commandes).
-    \item Naviguez jusqu'au dossier racine qui héberge le fichier \texttt{index.html}.
-    \item Lancez la commande suivante : \texttt{python -m http.server}
-    \item Ouvrez votre navigateur et accédez à l'adresse : \texttt{localhost:8000}
-\end{itemize}
-
-% --- IMAGEN TERMINAL ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.6\textwidth]{konsole.png}
-    \caption{Lancement du serveur local avec Python.}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{localhost.png}
-    \caption{Accès au serveur local.}
-\end{figure}
-
-
-\subsection*{Affichage en mode Mobile-First}
-Une fois sur la page, l'application s'affichera à l'écran comme illustré avant, en mode PC.
-
-Cependant, étant donné que "Televerie" est conçue avec une approche "Mobile-First", vous devez activer la vue mobile pour profiter d'une expérience optimale et fidèle au design :
-\begin{itemize}
-    \item Appuyez sur \texttt{Ctrl + Shift + I} (ou la touche \texttt{F12}) pour ouvrir les outils de développement du navigateur.
-    \item Activez l'affichage "Appareil mobile" (souvent représenté par une icône de téléphone/tablette).
-    \item Dans le menu déroulant en haut de l'écran, sélectionnez la vue \textbf{iPhone 14} ou \textbf{iPhone 14 Pro Max}.
-\end{itemize}
-
-% --- IMAGEN DEVTOOLS IPHONE ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{mobile.png}
-    \caption{Sélection de la vue iPhone 14 dans les outils de développement.}
-\end{figure}
-
-\newpage
-\section*{Page d'Accueil}
 \section*{Fonctionnalités de l'Accueil}
 La page d'accueil est le tableau de bord principal de l'application. Son but est de donner à l'étudiant toutes les informations les plus importantes en un seul coup d'œil, pour qu'il ne perde pas de temps.
 
@@ -262,6 +157,15 @@ Cette méthode permet de réutiliser le code de navigation global (situé dans \
 
 \newpage
 
+\section*{Infrastructure et Organisation du Projet}
+La mise en place du projet a commencé par la création d'un dépôt structuré de manière modulaire. L'objectif est de séparer clairement les différentes responsabilités de l'application pour faciliter le développement :
+\begin{itemize}
+    \item \textbf{Dossier \texttt{src/}} : Contient les morceaux de code HTML pour chaque vue (accueil, profil, etc.) et les éléments communs comme la barre de navigation.
+    \item \textbf{Dossier \texttt{js/}} : Regroupe toute la logique de fonctionnement, avec des scripts spécifiques pour chaque écran.
+    \item \textbf{Dossier \texttt{styles/}} : Centralise les fichiers CSS pour l'apparence visuelle.
+    \item \textbf{Dossier \texttt{ressources/data/}} : Sert de base de données simplifiée avec des fichiers au format JSON.
+\end{itemize}
+
 \section*{Système de Routage et Navigation}
 Pour que l'application soit rapide et fluide, un système de "routage dynamique" a été mis en place dans le fichier \texttt{app.js}. Contrairement à un site web classique, l'application ne recharge jamais la page entière.
 
@@ -279,37 +183,25 @@ La barre située en bas de l'écran permet de passer d'une section à l'autre. E
 \end{figure}
 
 \section*{Le Module Profil : Une Navigation Intuitive}
-Le module de profil a été conçu pour ressembler à une application mobile native, tant par son fonctionnement que par son esthétique épurée.
+Le module de profil a été conçu pour ressembler à une application mobile native. Il utilise une architecture de "panneaux coulissants".
 
-\subsection*{Design et Interface Visuelle}
-L'interface du profil se divise en trois zones distinctes pour une lecture rapide :
-\begin{itemize}
-    \item \textbf{L'En-tête} : Affiche clairement le titre "Profil" accompagné d'une icône de notification (cloche) pour les alertes urgentes.
-    \item \textbf{La Zone Utilisateur} : Met en avant l'identité de l'étudiant avec un avatar circulaire bordé aux couleurs de l'application. Les informations de contact (nom, e-mail, téléphone) sont présentées dans des blocs blancs arrondis, créant un contraste doux avec le fond légèrement grisé.
-    \item \textbf{La Liste de Navigation} : Les différentes options de gestion sont organisées sous forme de liste avec des séparateurs fins et des icônes de flèches (chevrons), invitant l'utilisateur à explorer les sous-menus.
-\end{itemize}
+\subsection*{Architecture des écrans}
+Au lieu d'ouvrir de nouvelles pages, le système affiche ou cache des blocs de contenu en fonction des clics de l'utilisateur. En cliquant sur une option du menu, le menu principal disparaît pour laisser place aux détails (Données, Paiement, etc.). Un bouton "Retour" permet de faire le chemin inverse.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{profil_principal.png}
-    \caption{Interface principale du compte utilisateur.}
+    \caption{Écran principal du profil avec les différentes options de gestion.}
     \label{fig:profil-main}
 \end{figure}
 
-\subsection*{Architecture des écrans}
-Au lieu d'ouvrir de nouvelles pages, le système affiche ou cache des blocs de contenu en fonction des clics de l'utilisateur. En cliquant sur une option du menu, le menu principal disparaît pour laisser place aux détails. Un bouton "Retour" permet de faire le chemin inverse instantanément.
-
 \section*{Fonctionnement technique des sous-menus}
-Chaque section du profil répond à un besoin spécifique de l'étudiant, avec une gestion dynamique des données.
 
-\subsection*{Données personnelles et Moyens de paiement}
-Le sous-menu \textbf{Données} permet de consulter ses informations officielles (adresse, date de naissance). Pour le \textbf{Paiement}, un algorithme de sécurité masque les numéros de carte bancaire, ne laissant visibles que les chiffres nécessaires à l'identification de la carte (ex: 4502 •••• •••• 1234).
+\subsection*{Données et Paiement}
+Les informations sont extraites des fichiers de données pour remplir automatiquement les formulaires. Pour la sécurité visuelle, un algorithme masque les numéros de carte bancaire en ne laissant apparaître que les premiers et derniers chiffres (ex: 4502 •••• •••• 1234).
 
 \subsection*{Historique et Notifications}
-L'\textbf{Historique} permet de suivre les 24 dernières utilisations des machines avec le prix et le statut de chaque session. Les \textbf{Notifications} centralisent les messages système (fin de cycle, alertes de maintenance) avec un code couleur par type d'alerte.
-
-\subsection*{Paramètres et Support}
-La section \textbf{Paramètres} offre des options de personnalisation comme le mode sombre ou les préférences de notification via des commutateurs (toggles) interactifs. Enfin, \textbf{Aide \& Support} propose une assistance directe et une foire aux questions pour résoudre les problèmes courants en laverie.
+L'historique affiche une liste de 24 entrées. Pour que les dates soient faciles à lire, elles sont formatées selon les standards français (ex: "15 oct. 2025"). De la même manière, les notifications changent de couleur selon leur importance (rouge pour une alerte, bleu pour une information).
 
 \begin{figure}[H]
     \centering
@@ -350,7 +242,7 @@ La section \textbf{Paramètres} offre des options de personnalisation comme le m
         \includegraphics[width=\linewidth]{sub_support.png}
         \caption{Support}
     \end{subfigure}
-    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil.}
+    \caption{Grille des différents sous-menus intégrés dynamiquement.}
     \label{fig:profil-grid}
 \end{figure}
 

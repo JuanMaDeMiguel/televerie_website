@@ -33,8 +33,8 @@ L'application propose une interface Mobile-First centralisée autour de quatre a
 **Phase 2 : Structure Globale et UI de base**
 * Créer le squelette HTML5 principal (Layout de base). Julian Andres RAYES CANO
 * Configurer le fichier CSS avec les variables globales (couleurs, typographies, bordures) extraites du prototype. Juan Cruz BAUDINO CASAIS
-* Intégrer et styliser la barre de navigation inférieure (Bottom Navigation Bar) pour lier les 4 vues principales.Juan Marcos DE MIGUEL
-* Animations : unifier les animations de changement de vue Facundo Arito
+* Intégrer et styliser la barre de navigation inférieure (Bottom Navigation Bar) pour lier les 4 vues principales. Juan Marcos DE MIGUEL
+* Animations : unifier les animations de changement de vue. Facundo Arito
 
 **Phase 3 : Intégration de l'écran "Accueil"**
 * Intégrer l'en-tête dynamique (Message de bienvenue + sélection de la laverie). Facundo ARITO

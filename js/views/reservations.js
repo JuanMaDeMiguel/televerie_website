@@ -132,27 +132,67 @@
     return map;
   }
 
-  function getCalendarStatus(dateKey) {
-    const demandValue = getDemandMap().get(dateKey);
+function getDemandValue(dateKey) {
+  const demandValue = getDemandMap().get(dateKey);
+  return typeof demandValue === "number" ? demandValue : 0;
+}
 
-    if (compareDateKeys(dateKey, window.ReservationsService.todayKey()) < 0) {
-      return "past";
+function getRecommendedDateKey(monthDate) {
+  if (!monthDate) {
+    return null;
+  }
+
+  const todayKey = window.ReservationsService.todayKey();
+  const lastDay = new Date(
+    monthDate.getFullYear(),
+    monthDate.getMonth() + 1,
+    0
+  ).getDate();
+
+  let bestDateKey = null;
+  let bestDemandValue = Number.POSITIVE_INFINITY;
+
+  for (let day = 1; day <= lastDay; day += 1) {
+    const dateKey = toDateKey(
+      new Date(monthDate.getFullYear(), monthDate.getMonth(), day)
+    );
+
+    if (compareDateKeys(dateKey, todayKey) < 0) {
+      continue;
     }
 
-    if (typeof demandValue !== "number") {
-      return "available";
-    }
+    const demandValue = getDemandValue(dateKey);
 
     if (demandValue >= 10) {
-      return "unavailable";
+      continue;
     }
 
-    if (demandValue > 0 && demandValue <= 4) {
-      return "recommended";
+    if (demandValue < bestDemandValue) {
+      bestDemandValue = demandValue;
+      bestDateKey = dateKey;
     }
-
-    return "available";
   }
+
+  return bestDateKey;
+}
+
+function getCalendarStatus(dateKey, recommendedDateKey = null) {
+  if (compareDateKeys(dateKey, window.ReservationsService.todayKey()) < 0) {
+    return "past";
+  }
+
+  const demandValue = getDemandValue(dateKey);
+
+  if (demandValue >= 10) {
+    return "unavailable";
+  }
+
+  if (recommendedDateKey && dateKey === recommendedDateKey) {
+    return "recommended";
+  }
+
+  return "available";
+}
 
   function getDemandSeries() {
     const demandMap = getDemandMap();
@@ -227,53 +267,69 @@
   }
 
   function renderPreviewCalendar() {
-    const firstDay = new Date(state.previewMonthDate.getFullYear(), state.previewMonthDate.getMonth(), 1).getDay();
-    const lastDay = new Date(state.previewMonthDate.getFullYear(), state.previewMonthDate.getMonth() + 1, 0).getDate();
+  const firstDay = new Date(
+    state.previewMonthDate.getFullYear(),
+    state.previewMonthDate.getMonth(),
+    1
+  ).getDay();
 
-    refs.calendarMonth.textContent = formatMonthYear(state.previewMonthDate);
+  const lastDay = new Date(
+    state.previewMonthDate.getFullYear(),
+    state.previewMonthDate.getMonth() + 1,
+    0
+  ).getDate();
 
-    const html = [];
+  const recommendedDateKey = getRecommendedDateKey(state.previewMonthDate);
 
-    for (let i = 0; i < firstDay; i += 1) {
-      html.push('<div class="reservations-calendar__empty" aria-hidden="true"></div>');
-    }
+  refs.calendarMonth.textContent = formatMonthYear(state.previewMonthDate);
 
-    for (let day = 1; day <= lastDay; day += 1) {
-      const date = new Date(state.previewMonthDate.getFullYear(), state.previewMonthDate.getMonth(), day);
-      const dateKey = toDateKey(date);
-      const status = getCalendarStatus(dateKey);
-      const classes = ["reservations-calendar__day"];
+  const html = [];
 
-      if (status === "recommended") {
-        classes.push("is-recommended");
-      }
-
-      if (status === "unavailable") {
-        classes.push("is-unavailable");
-      }
-
-      if (status === "past") {
-        classes.push("is-past");
-      }
-
-      if (state.selectedDateKey === dateKey && status === "available") {
-        classes.push("is-selected");
-      }
-
-      html.push(`
-        <button
-          type="button"
-          class="${classes.join(" ")}"
-          data-preview-date="${dateKey}"
-          ${status === "past" ? "disabled" : ""}
-        >
-          ${day}
-        </button>
-      `);
-    }
-
-    refs.calendarGrid.innerHTML = html.join("");
+  for (let i = 0; i < firstDay; i += 1) {
+    html.push('<div class="reservations-calendar__empty" aria-hidden="true"></div>');
   }
+
+  for (let day = 1; day <= lastDay; day += 1) {
+    const date = new Date(
+      state.previewMonthDate.getFullYear(),
+      state.previewMonthDate.getMonth(),
+      day
+    );
+
+    const dateKey = toDateKey(date);
+    const status = getCalendarStatus(dateKey, recommendedDateKey);
+    const classes = ["reservations-calendar__day"];
+
+    if (status === "recommended") {
+      classes.push("is-recommended");
+    }
+
+    if (status === "unavailable") {
+      classes.push("is-unavailable");
+    }
+
+    if (status === "past") {
+      classes.push("is-past");
+    }
+
+    if (state.selectedDateKey === dateKey && status === "available") {
+      classes.push("is-selected");
+    }
+
+    html.push(`
+      <button
+        type="button"
+        class="${classes.join(" ")}"
+        data-preview-date="${dateKey}"
+        ${status === "past" ? "disabled" : ""}
+      >
+        ${day}
+      </button>
+    `);
+  }
+
+  refs.calendarGrid.innerHTML = html.join("");
+}
 
   function renderDemandChart() {
     const series = getDemandSeries();
@@ -569,14 +625,19 @@
   }
 
   async function openBookingModal(dateKey) {
-    const today = window.ReservationsService.todayKey();
+  const today = window.ReservationsService.todayKey();
+  const fallbackDateKey = getRecommendedDateKey(state.previewMonthDate) || today;
 
-    state.selectedDateKey = dateKey && compareDateKeys(dateKey, today) >= 0 ? dateKey : today;
-    state.selectedTime = null;
-    state.bookingMonthDate = startOfMonth(dateKeyToDate(state.selectedDateKey));
+  state.selectedDateKey =
+    dateKey && compareDateKeys(dateKey, today) >= 0
+      ? dateKey
+      : fallbackDateKey;
 
-    openModal("booking");
-    await renderBookingModal();
+  state.selectedTime = null;
+  state.bookingMonthDate = startOfMonth(dateKeyToDate(state.selectedDateKey));
+
+  openModal("booking");
+  await renderBookingModal();
   }
 
   async function changeBookingMonth(delta) {
@@ -738,49 +799,49 @@
   }
 
   async function initReservationsView() {
+  if (!document.getElementById("reservations-view")) {
+    return;
+  }
+
+  cacheElements();
+  closeModal();
+
+  if (window.reservationsCountdownInterval) {
+    clearInterval(window.reservationsCountdownInterval);
+  }
+
+  await window.ReservationsService.init();
+  await refreshData();
+
+  const currentMonth = startOfMonth(new Date());
+
+  state.previewMonthDate = currentMonth;
+  state.bookingMonthDate = currentMonth;
+  state.selectedDateKey = state.db.nextReservation
+    ? state.db.nextReservation.date
+    : (getRecommendedDateKey(currentMonth) || window.ReservationsService.todayKey());
+
+  state.selectedTime = null;
+  state.bookingSlots = [];
+  state.activeModal = null;
+
+  bindEvents();
+  renderAll();
+
+  if (window.openBookingModalFromHome) {
+    openBookingModal(window.ReservationsService.todayKey());
+    window.openBookingModalFromHome = false;
+  }
+
+  window.reservationsCountdownInterval = setInterval(() => {
     if (!document.getElementById("reservations-view")) {
+      clearInterval(window.reservationsCountdownInterval);
+      window.reservationsCountdownInterval = null;
       return;
     }
 
-    cacheElements();
-    closeModal();
-
-    if (window.reservationsCountdownInterval) {
-      clearInterval(window.reservationsCountdownInterval);
-    }
-
-    await window.ReservationsService.init();
-    await refreshData();
-
-    state.previewMonthDate = startOfMonth(new Date());
-    state.bookingMonthDate = startOfMonth(new Date());
-    state.selectedDateKey = state.db.nextReservation
-      ? state.db.nextReservation.date
-      : window.ReservationsService.todayKey();
-    state.selectedTime = null;
-    state.bookingSlots = [];
-    state.activeModal = null;
-
-    bindEvents();
-    renderAll();
-
-    if (window.openBookingModalFromHome) {
-      // open modal with today's date
-      openBookingModal(window.ReservationsService.todayKey());
-      
-      // turn off flag to avoid opening the modal if we click on reservations
-      window.openBookingModalFromHome = false; 
-    }
-
-    window.reservationsCountdownInterval = setInterval(() => {
-      if (!document.getElementById("reservations-view")) {
-        clearInterval(window.reservationsCountdownInterval);
-        window.reservationsCountdownInterval = null;
-        return;
-      }
-
-      renderSummaryCard();
-    }, 1000);
+    renderSummaryCard();
+  }, 1000);
   }
 
   window.initReservationsView = initReservationsView;

@@ -5,7 +5,7 @@
 \usepackage[T1]{fontenc}
 \usepackage[french]{babel}
 \usepackage{geometry}
-\geometry{a4paper, margin=2.5cm}
+\geometry{a4paper, margin=2.2cm, top=1.5cm, bottom=1.5cm}
 
 % Paquetes para diseño y código
 \usepackage{xcolor}
@@ -202,7 +202,7 @@ L'objectif principal de l'application est de permettre à l'utilisateur de rése
 \begin{figure}[H]
     \centering
     % Asegurate de que el archivo subido se llame exactamente popupmapa.png 
-    \includegraphics[width=0.4\textwidth]{popupreserv.png}
+    \includegraphics[width=0.38\textwidth]{popupreserv.png}
     \caption{Aperçu de la fenêtre modale de réservation avec le calendrier et les horaires.}
     \label{fig:popup-reservation}
 \end{figure}
@@ -243,7 +243,6 @@ Pour l'affichage des fenêtres modales (la Carte et le Profil), nous avons opté
 
 Enfin, pour la navigation, nous avons utilisé une technique de "clic simulé" pour respecter l'architecture "Single Page Application" (SPA) de notre projet. 
 
-\newpage
 
 \begin{lstlisting}[caption={Exemple de navigation simulee vers les reservations}]
 const reserveBtn = document.querySelector('.btn-primary-pill');
@@ -291,7 +290,7 @@ L'interface du profil se divise en trois zones distinctes pour une lecture rapid
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.4\textwidth]{profil_principal.png}
+    \includegraphics[width=0.25\textwidth]{profil_principal.png}
     \caption{Interface principale du compte utilisateur.}
     \label{fig:profil-main}
 \end{figure}
@@ -311,41 +310,47 @@ L'\textbf{Historique} permet de suivre les 24 dernières utilisations des machin
 \subsection*{Paramètres et Support}
 La section \textbf{Paramètres} offre des options de personnalisation comme le mode sombre ou les préférences de notification via des commutateurs (toggles) interactifs. Enfin, \textbf{Aide \& Support} propose une assistance directe et une foire aux questions pour résoudre les problèmes courants en laverie.
 
+\section*{Gestion et Origine des Données}
+Le projet repose sur l'utilisation de fichiers JSON pour simuler une base de données réelle.
+\begin{itemize}
+    \item \textbf{Création de fichiers} : Les structures des fichiers \texttt{profile.json} et \texttt{notifications.json} ont été créées de toutes pièces pour répondre aux besoins de l'interface de profil.
+    \item \textbf{Intégration technique} : Les fichiers \texttt{reservations.json} et \texttt{ranking.json} étaient déjà présents. Le travail a consisté à les connecter à l'interface en utilisant des fonctions asynchrones (\texttt{fetch} et \texttt{Promise.all}), ce qui permet de charger toutes les données en même temps avant d'afficher l'écran à l'utilisateur.
+\end{itemize}
+
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_donnees.png}
         \caption{Données}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_paiement.png}
         \caption{Paiement}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_historique.png}
         \caption{Historique}
     \end{subfigure}
     
-    \vspace{0.4cm}
     
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_notifs.png}
         \caption{Notifications}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_params.png}
         \caption{Paramètres}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.31\textwidth}
+    \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_support.png}
         \caption{Support}
@@ -354,11 +359,5 @@ La section \textbf{Paramètres} offre des options de personnalisation comme le m
     \label{fig:profil-grid}
 \end{figure}
 
-\section*{Gestion et Origine des Données}
-Le projet repose sur l'utilisation de fichiers JSON pour simuler une base de données réelle.
-\begin{itemize}
-    \item \textbf{Création de fichiers} : Les structures des fichiers \texttt{profile.json} et \texttt{notifications.json} ont été créées de toutes pièces pour répondre aux besoins de l'interface de profil.
-    \item \textbf{Intégration technique} : Les fichiers \texttt{reservations.json} et \texttt{ranking.json} étaient déjà présents. Le travail a consisté à les connecter à l'interface en utilisant des fonctions asynchrones (\texttt{fetch} et \texttt{Promise.all}), ce qui permet de charger toutes les données en même temps avant d'afficher l'écran à l'utilisateur.
-\end{itemize}
 
 \end{document}

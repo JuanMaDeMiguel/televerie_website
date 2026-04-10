@@ -13,6 +13,7 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{caption}
 \usepackage{subcaption}
 
 % Configuración visual para los bloques de código JavaScript
@@ -217,6 +218,7 @@ Lorsqu'une machine commence à tourner, le système enregistre son heure de fin 
 \subsection*{Un calcul du temps générique et automatique}
 La fonction \texttt{updateTimers()} est responsable de faire reculer le temps. Ce qui est intéressant dans notre code, c'est sa flexibilité. La fonction ne cherche pas "le lave-linge 2" ou "le sèche-linge 1". Elle cherche simplement n'importe quel élément HTML qui possède la classe CSS \texttt{.en-cours}. 
 
+\newpage
 \begin{lstlisting}[caption={Extrait de la fonction de mise à jour du temps}]
 function updateTimers() {
     // Le code trouve automatiquement les lave-linges ET les seche-linges occupes
@@ -275,6 +277,41 @@ La barre située en bas de l'écran permet de passer d'une section à l'autre. E
     \includegraphics[width=0.5\textwidth]{navigation.png}
     \caption{Aperçu de la barre de navigation dynamique.}
     \label{fig:navigation}
+\end{figure}
+
+\newpage
+\section*{Page de Classement (Ranking)}
+
+L'une des sections principales du menu de navigation est l'onglet « Classement ». Cette vue permet de visualiser le score de crédit actuel de l'utilisateur ainsi que sa position relative par rapport aux autres résidents. L'idée fondamentale de notre projet est de gérer la priorité des réservations des machines en fonction de ce score. Ainsi, en cas de requêtes simultanées pour un même créneau ou une même machine, l'application accordera la priorité à l'utilisateur possédant le meilleur score de crédit.
+
+\subsection*{Score Personnel}
+L'interface présente en premier lieu la section dédiée au score personnel. Nous y avons intégré une animation circulaire qui se remplit progressivement pour afficher le score cumulé de l'utilisateur de manière dynamique. De plus, selon le nombre de points obtenus, un message contextuel indique la position de l'utilisateur dans le classement global (par exemple, l'appartenance au top 10\% des utilisateurs de la résidence).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{personal_score.png}
+    \caption{Affichage dynamique du score personnel de l'utilisateur.}
+    \label{fig:ranking-score}
+\end{figure}
+
+\subsection*{Classement Global}
+Dans un second temps, la vue intègre le classement global des utilisateurs (Leaderboard). Afin de séparer la logique de programmation de l'interface web de la base de données des utilisateurs, les informations sont gérées et récupérées via un fichier \texttt{.json}. Ce fichier de données stocke les attributs essentiels de chaque résident, tels que le nom, le score, la position dans le classement et le chemin d'accès vers la photo de profil.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{ranking_scores.png}
+    \caption{Classement global des utilisateurs alimenté par un fichier JSON.}
+    \label{fig:ranking-leaderboard}
+\end{figure}
+
+\subsection*{Politiques d'Utilisation et Fenêtre Modale d'Information}
+Enfin, comme illustré sur la vue du score personnel, un bouton d'aide en forme de point d'interrogation est mis à la disposition de l'utilisateur. Un clic sur ce bouton déclenche l'apparition d'une fenêtre contextuelle (pop-up modale) centrée sur l'écran, qui détaille les politiques de l'application. Elle explique concrètement les actions permettant à un utilisateur de gagner ou de perdre des points. Cette approche garantit que l'utilisateur est pleinement informé des comportements attendus dans la laverie.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{ranking_politics.png}
+    \caption{Fenêtre modale détaillant les politiques d'attribution des points.}
+    \label{fig:ranking-politics}
 \end{figure}
 
 \section*{Le Module Profil : Une Navigation Intuitive}
@@ -336,8 +373,13 @@ Le projet repose sur l'utilisation de fichiers JSON pour simuler une base de don
         \includegraphics[width=\linewidth]{sub_historique.png}
         \caption{Historique}
     \end{subfigure}
-    
-    
+    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil (Partie 1/2).}
+    \label{fig:profil-grid-1}
+\end{figure}
+
+\begin{figure}[H]
+    \ContinuedFloat 
+    \centering
     \begin{subfigure}{0.25\textwidth}
         \centering
         \includegraphics[width=\linewidth]{sub_notifs.png}
@@ -355,8 +397,8 @@ Le projet repose sur l'utilisation de fichiers JSON pour simuler une base de don
         \includegraphics[width=\linewidth]{sub_support.png}
         \caption{Support}
     \end{subfigure}
-    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil.}
-    \label{fig:profil-grid}
+    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil (Suite).}
+    \label{fig:profil-grid-2}
 \end{figure}
 
 

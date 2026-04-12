@@ -1,405 +1,635 @@
 \documentclass[12pt,a4paper]{article}
 
-% Paquetes básicos para idioma y formato
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[french]{babel}
-\usepackage{geometry}
+% Paquetes básicos para idioma y formato \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} \usepackage[french]{babel} \usepackage{geometry}
 \geometry{a4paper, margin=2.2cm, top=1.5cm, bottom=1.5cm}
 
-% Paquetes para diseño y código
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage{caption}
-\usepackage{subcaption}
+% Paquetes para diseño y código \usepackage{xcolor} \usepackage{listings}
+\usepackage{hyperref} \usepackage{graphicx} \usepackage{float}
+\usepackage{caption} \usepackage{subcaption}
 
-% Configuración visual para los bloques de código JavaScript
-\lstset{
-    backgroundcolor=\color{gray!10},
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{blue}\bfseries,
-    stringstyle=\color{red},
-    commentstyle=\color{green!60!black},
-    numbers=left,
-    numberstyle=\tiny\color{gray},
-    stepnumber=1,
-    breaklines=true,
-    frame=single,
-    showstringspaces=false,
-    language=Java % Usamos Java como base visual para JS
-}
+% Configuración visual para los bloques de código JavaScript \lstset{
+backgroundcolor=\color{gray!10}, basicstyle=\ttfamily\small,
+keywordstyle=\color{blue}\bfseries, stringstyle=\color{red},
+commentstyle=\color{green!60!black}, numbers=left, numberstyle=\tiny\color{gray},
+stepnumber=1, breaklines=true, frame=single, showstringspaces=false,
+language=Java % Usamos Java como base visual para JS }
 
-\title{\textbf{Rapport de Développement Web : Application Televerie}}
-\author{
-    \textbf{Projet réalisé par :} \\
-    Facundo ARITO, Juan BAUDINO, Juan DE MIGUEL, Julian RAYES \\
-    \textbf{Enseignant :} Sébastien KUBICKI \\
-    \textbf{École Nationale d'Ingénieurs de Brest (ENIB)}
-}
-\date{}
+\title{\textbf{Rapport de Développement Web : Application Televerie}} \author{
+\textbf{Projet réalisé par :} \\ Facundo ARITO, Juan BAUDINO, Juan DE MIGUEL,
+Julian RAYES \\ \textbf{Enseignant :} Sébastien KUBICKI \\ \textbf{École
+Nationale d'Ingénieurs de Brest (ENIB)} } \date{}
 
 \begin{document}
 
-\maketitle
-\thispagestyle{empty} % <-- Saca el número de la primera página (la del título)
-\pagestyle{empty}     % <-- Saca el número de todas las páginas suivantes
+\maketitle \thispagestyle{empty} % <-- Saca el número de la primera página (la
+del título) \pagestyle{empty} % <-- Saca el número de todas las páginas
+suivantes
 
-\section*{Introduction Générale}
-La société prestataire en charge des équipements de laverie des résidences CROUS de Brest nous a contactés pour résoudre un problème d'organisation majeur dans leurs locaux. Ce document s'inscrit dans la continuité de notre précédent rapport axé sur la conception centrée utilisateur (création des personas, idéation, wireframes, maquettes et prototype). 
+\section*{Introduction Générale} La société prestataire en charge des
+équipements de laverie des résidences CROUS de Brest nous a contactés pour
+résoudre un problème d'organisation majeur dans leurs locaux. Ce document
+s'inscrit dans la continuité de notre précédent rapport axé sur la conception
+centrée utilisateur (création des personas, idéation, wireframes, maquettes et
+prototype).
 
-L'objectif de ce nouveau rapport est de présenter la programmation technique du Frontend de l'application "Televerie". Nous y détaillerons la traduction de nos maquettes en code fonctionnel, en utilisant les langages web standards : HTML, CSS et JavaScript.
+L'objectif de ce nouveau rapport est de présenter la programmation technique du
+Frontend de l'application "Televerie". Nous y détaillerons la traduction de nos
+maquettes en code fonctionnel, en utilisant les langages web standards : HTML,
+CSS et JavaScript.
 
-\section*{Infrastructure et Organisation du Projet}
-La mise en place du projet a commencé par la création d'un dépôt structuré de manière modulaire. L'objectif est de séparer clairement les differentes responsabilités de l'application pour faciliter le développement. Voici l'arborescence actuelle du projet avec ses composants principaux :
+\section*{Infrastructure et Organisation du Projet} La mise en place du projet
+a commencé par la création d'un dépôt structuré de manière modulaire. L'objectif
+est de séparer clairement les differentes responsabilités de l'application pour
+faciliter le développement. Voici l'arborescence actuelle du projet avec ses
+composants principaux :
 
-\begin{verbatim}
-.
-|-- icons/
-|-- img/
-|   `-- profile_pics/
-|-- index.html
-|-- js/ (Logique de fonctionnement et scripts)
-|   |-- app.js (Système de routage global)
-|   |-- services/
-|   `-- views/ (Initialisation des écrans)
-|-- rapport/ (Documentation technique)
-|-- README.md
-|-- ressources/
-|   `-- data/ (Base de données locale JSON)
-|-- src/ (Fragments HTML et composants)
-|   |-- bottom-nav.html
-|   `-- views/ (Fichiers HTML des vues)
-`-- styles/ (Feuilles de style CSS)
-    |-- bottom-nav.css
-    |-- global.css
-    `-- views/
-\end{verbatim}
+\begin{verbatim} . |-- icons/ |-- img/ | `-- profile_pics/ |-- index.html |--
+js/ (Logique de fonctionnement et scripts) | |-- app.js (Système de routage
+global) | |-- services/ | `-- views/ (Initialisation des écrans) |-- rapport/
+(Documentation technique) |-- README.md |-- ressources/ | `-- data/ (Base de
+données locale JSON) |-- src/ (Fragments HTML et composants) | |-- bottom-nav.
+html | `-- views/ (Fichiers HTML des vues) `-- styles/ (Feuilles de style CSS)
+|-- bottom-nav.css |-- global.css `-- views/ \end{verbatim}
 
-\section*{Comment lancer l'application}
-Pour tester l'application "Televerie" sur votre ordinateur, plusieurs méthodes sont possibles. Veuillez suivre ces étapes selon la configuration de votre machine :
+\section*{Comment lancer l'application} Pour tester l'application "Televerie"
+sur votre ordinateur, plusieurs méthodes sont possibles. Veuillez suivre ces
+étapes selon la configuration de votre machine :
 
-\subsection*{Méthode 1 : Ouverture directe}
-La méthode la plus simple consiste à faire un double-clic sur le fichier \texttt{index.html}. Cela ouvrira l'application directement dans votre navigateur par défaut.
+\subsection*{Méthode 1 : Ouverture directe} La méthode la plus simple consiste
+à faire un double-clic sur le fichier \texttt{index.html}. Cela ouvrira
+l'application directement dans votre navigateur par défaut.
 
-\subsection*{Méthode 2 : Configuration sur Firefox}
-Si la première méthode ne fonctionne pas (parfois à cause des sécurités du navigateur bloquant les scripts locaux), nous recommandons d'utiliser Firefox :
-\begin{itemize}
-    \item Ouvrez Firefox et tapez \texttt{about:config} dans la barre d'adresse.
-    \item Acceptez l'avertissement de sécurité.
-    \item Cherchez le paramètre \texttt{privacy.file\_unique\_origin}.
-    \item Changez sa valeur de \texttt{true} à \texttt{false}.
-    \item Rechargez la page \texttt{index.html}.
+\subsection*{Méthode 2 : Configuration sur Firefox} Si la première méthode ne
+fonctionne pas (parfois à cause des sécurités du navigateur bloquant les scripts
+locaux), nous recommandons d'utiliser Firefox : \begin{itemize} \item Ouvrez
+Firefox et tapez \texttt{about:config} dans la barre d'adresse. \item Acceptez
+l'avertissement de sécurité. \item Cherchez le paramètre \texttt{privacy.
+file\_unique\_origin}. \item Changez sa valeur de \texttt{true} à \texttt{false}.
+\item Rechargez la page \texttt{index.html}. \end{itemize}
+
+% --- IMAGEN FIREFOX --- \begin{figure}[H] \centering % Remplacez par le nom de
+votre image \includegraphics[width=0.8\textwidth]{firefox.png}
+\caption{Configuration du paramètre de confidentialité sur Firefox.}
+\end{figure}
+
+\subsection*{Méthode 3 : Lancer un serveur local (Python)} Si les méthodes
+précédentes échouent, vous pouvez simuler un environnement de serveur web local
+via le terminal : \begin{itemize} \item Ouvrez un terminal (ou l'invite de
+commandes). \item Naviguez jusqu'au dossier racine qui héberge le fichier
+\texttt{index.html}. \item Lancez la commande suivante : \texttt{python -m http.
+server} \item Ouvrez votre navigateur et accédez à l'adresse : \texttt{localhost:
+8000} \end{itemize}
+
+% --- IMAGEN TERMINAL --- \begin{figure}[H] \centering % Remplacez par le nom
+de votre image \includegraphics[width=0.6\textwidth]{konsole.png}
+\caption{Lancement du serveur local avec Python.} \end{figure}
+
+\begin{figure}[H] \centering % Remplacez par le nom de votre image
+\includegraphics[width=0.8\textwidth]{localhost.png} \caption{Accès au serveur
+local.} \end{figure}
+
+\subsection*{Affichage en mode Mobile-First} Une fois sur la page,
+l'application s'affichera à l'écran comme illustré avant, en mode PC.
+
+Cependant, étant donné que "Televerie" est conçue avec une approche
+"Mobile-First", vous devez activer la vue mobile pour profiter d'une expérience
+optimale et fidèle au design : \begin{itemize} \item Appuyez sur \texttt{Ctrl +
+Shift + I} (ou la touche \texttt{F12}) pour ouvrir les outils de développement
+du navigateur. \item Activez l'affichage "Appareil mobile" (souvent représenté
+par une icône de téléphone/tablette). \item Dans le menu déroulant en haut de
+l'écran, sélectionnez la vue \textbf{iPhone 14} ou \textbf{iPhone 14 Pro Max}.
 \end{itemize}
 
-% --- IMAGEN FIREFOX ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{firefox.png}
-    \caption{Configuration du paramètre de confidentialité sur Firefox.}
+% --- IMAGEN DEVTOOLS IPHONE --- \begin{figure}[H] \centering % Remplacez par
+le nom de votre image \includegraphics[width=0.8\textwidth]{mobile.png}
+\caption{Sélection de la vue iPhone 14 dans les outils de développement.}
 \end{figure}
 
-\subsection*{Méthode 3 : Lancer un serveur local (Python)}
-Si les méthodes précédentes échouent, vous pouvez simuler un environnement de serveur web local via le terminal :
-\begin{itemize}
-    \item Ouvrez un terminal (ou l'invite de commandes).
-    \item Naviguez jusqu'au dossier racine qui héberge le fichier \texttt{index.html}.
-    \item Lancez la commande suivante : \texttt{python -m http.server}
-    \item Ouvrez votre navigateur et accédez à l'adresse : \texttt{localhost:8000}
-\end{itemize}
+\newpage \section*{Page d'Accueil} \section*{Fonctionnalités de l'Accueil} La
+page d'accueil est le tableau de bord principal de l'application. Son but est de
+donner à l'étudiant toutes les informations les plus importantes en un seul coup
+d'œil, pour qu'il ne perde pas de temps.
 
-% --- IMAGEN TERMINAL ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.6\textwidth]{konsole.png}
-    \caption{Lancement du serveur local avec Python.}
-\end{figure}
+\begin{figure}[H] % <--- LA "H" MAYÚSCULA HACE LA MAGIA \centering
+\includegraphics[width=0.4\textwidth]{pagedaccueil.png} \caption{Aperçu de la
+page d'accueil.} \label{fig:page-accueil} \end{figure}
 
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{localhost.png}
-    \caption{Accès au serveur local.}
-\end{figure}
+\subsection*{L'en-tête personnalisé} En haut de l'écran, l'utilisateur est
+accueilli par son prénom (par exemple, "Bonjour, Amina") et sa photo de profil.
+Juste en dessous, l'application indique le nom de la laverie actuellement
+sélectionnée (comme "Laverie de Kergoat") et ses horaires d'ouverture (8h - 22h).
+Cet espace sert à rassurer l'utilisateur sur le lieu qu'il est en train de
+consulter. De plus, un bouton "Plan" est placé juste à côté pour permettre
+d'ouvrir rapidement une carte des résidences.
 
+\subsection*{L'état des machines en direct} Le centre de la page est composé
+d'une grille montrant 4 machines à laver et 2 sèche-linges. Pour rendre
+l'interface très visuelle et facile à comprendre, nous avons utilisé un code
+couleur simple pour indiquer le statut de chaque équipement : \begin{itemize}
+\item \textbf{Vert (Libre) :} La machine est prête à être utilisée immédiatement.
+\item \textbf{Orange (En cours) :} La machine est occupée. Pour aider
+l'étudiant à calculer son temps, une animation circulaire avec un compte à
+rebours indique exactement les minutes restantes avant la fin du programme.
+\item \textbf{Bleu (Réservée) :} La machine est bloquée et attend l'arrivée de
+l'étudiant qui a réservé ce créneau. \end{itemize}
 
-\subsection*{Affichage en mode Mobile-First}
-Une fois sur la page, l'application s'affichera à l'écran comme illustré avant, en mode PC.
+\subsection*{L'action rapide (Bouton principal)} Enfin, en bas de l'écran, un
+grand bouton bleu "Réserver un créneau" flotte au-dessus du contenu. Il s'agit
+de l'action principale de l'application. Un simple clic sur ce bouton connecte
+directement l'utilisateur au calendrier de réservation, ce qui rend l'expérience
+beaucoup plus fluide et rapide.
 
-Cependant, étant donné que "Televerie" est conçue avec une approche "Mobile-First", vous devez activer la vue mobile pour profiter d'une expérience optimale et fidèle au design :
-\begin{itemize}
-    \item Appuyez sur \texttt{Ctrl + Shift + I} (ou la touche \texttt{F12}) pour ouvrir les outils de développement du navigateur.
-    \item Activez l'affichage "Appareil mobile" (souvent représenté par une icône de téléphone/tablette).
-    \item Dans le menu déroulant en haut de l'écran, sélectionnez la vue \textbf{iPhone 14} ou \textbf{iPhone 14 Pro Max}.
-\end{itemize}
+\section*{Navigation et Fenêtres Contextuelles (Pop-ups)} Afin de rendre
+l'application plus fluide et d'éviter de recharger la page entière, nous avons
+intégré des "pop-ups" (ou fenêtres modales) directement sur la page d'accueil.
+Cette technique améliore considérablement l'expérience utilisateur (UX) car elle
+donne l'impression d'utiliser une véritable application mobile native.
+L'utilisateur reste toujours dans son contexte sans perdre le fil de sa
+navigation.
 
-% --- IMAGEN DEVTOOLS IPHONE ---
-\begin{figure}[H]
-    \centering
-    % Remplacez par le nom de votre image
-    \includegraphics[width=0.8\textwidth]{mobile.png}
-    \caption{Sélection de la vue iPhone 14 dans les outils de développement.}
-\end{figure}
+\subsection*{Pop-up de la Carte (Plan)} En cliquant sur le bouton "Plan" situé
+en haut à droite de l'écran, une fenêtre superposée s'ouvre avec une carte
+interactive Google Maps intégrée. Cette carte montre avec précision 3 points
+(pins) rouges qui correspondent aux 3 résidences CROUS situées dans Brest
+Métropole. Cela est très utile pour les étudiants qui souhaitent vérifier la
+distance ou l'emplacement d'une autre laverie si la leur est complète. La
+fenêtre se ferme facilement en touchant la croix ou simplement en cliquant sur
+le fond sombre.
+
+% --- ESPACE POUR L'IMAGE DE LA CARTE --- \begin{figure}[H] % <--- LA "H"
+MAYÚSCULA HACE LA MAGIA \centering \includegraphics[width=0.
+4\textwidth]{popupmapa.png} \caption{Aperçu de la fenêtre modale affichant la
+carte interactive des résidences CROUS.} \label{fig:popup-carte} \end{figure}
+
+\subsection*{Pop-up du Profil Rapide} Pour offrir un raccourci pratique, un
+clic sur la photo de profil ouvre un petit résumé des données de l'utilisateur.
+Par exemple, pour l'étudiante Amina Rahmani, le pop-up affiche son nom complet,
+son e-mail universitaire et son numéro de téléphone dans un design épuré avec
+des cadres blancs arrondis. En bas de ce pop-up, le bouton "Voir mon profil"
+permet de naviguer instantanément vers la section complète du compte.
+
+\begin{figure}[H] \centering % Asegurate de que el archivo subido se llame
+exactamente popupmapa.png \includegraphics[width=0.4\textwidth]{popupprofil.png}
+\caption{Aperçu du pop-up de profil rapide avec les coordonnées basiques de
+l'utilisateur.} \label{fig:popup-profil} \end{figure}
+
+\subsection*{Pop-up de Réservation} L'objectif principal de l'application est
+de permettre à l'utilisateur de réserver un créneau pour une machine spécifique
+à l'avance. Pour faciliter cette action fondamentale, le grand bouton bleu
+"Réserver un créneau", situé en bas de l'écran d'accueil, fait le lien direct.
+Lorsqu'on le touche, il simule une navigation vers l'onglet des réservations et
+indique au système d'ouvrir automatiquement la fenêtre modale du calendrier.
+L'étudiant peut ainsi choisir sa date et son heure immédiatement, ce qui lui
+fait gagner des clics.
+
+% --- ESPACE POUR L'IMAGE DE RÉSERVATION --- \begin{figure}[H] \centering %
+Asegurate de que el archivo subido se llame exactamente popupmapa.png
+\includegraphics[width=0.38\textwidth]{popupreserv.png} \caption{Aperçu de la
+fenêtre modale de réservation avec le calendrier et les horaires.} \label{fig:
+popup-reservation} \end{figure}
+
+\section*{Détails Techniques : Le code \texttt{home.js}} La logique interactive
+de cette page se trouve dans le fichier \texttt{home.js}.
+
+\subsection*{Persistance des données (Le système de mémoire)} L'un des défis
+techniques était de garder les chronomètres actifs même si l'utilisateur change
+d'onglet (par exemple, s'il va voir son profil puis revient à l'accueil). Pour
+résoudre cela, nous utilisons un objet \texttt{Map()} appelé
+\texttt{homeMachineEndTimes}. Lorsqu'une machine commence à tourner, le système
+enregistre son heure de fin dans cette "mémoire". Ainsi, quand la vue
+\texttt{initHomeView()} est rechargée, le code vérifie d'abord si la machine a
+déjà une heure de fin enregistrée avant de créer un nouveau chronomètre.
+
+\subsection*{Un calcul du temps générique et automatique} La fonction
+\texttt{updateTimers()} est responsable de faire reculer le temps. Ce qui est
+intéressant dans notre code, c'est sa flexibilité. La fonction ne cherche pas
+"le lave-linge 2" ou "le sèche-linge 1". Elle cherche simplement n'importe quel
+élément HTML qui possède la classe CSS \texttt{.en-cours}.
+
+\newpage \begin{lstlisting}[caption={Extrait de la fonction de mise à jour du
+temps}] function updateTimers() { // Le code trouve automatiquement les
+lave-linges ET les seche-linges occupes const machines = document.
+querySelectorAll('.machine-card.en-cours');
+
+machines.forEach(machine => { // Lecture de l'heure de fin directement depuis
+le HTML const endTimeAttr = machine.dataset.endTime; const remaining = new
+Date(endTimeAttr).getTime() - Date.now();
+
+if (remaining <= 0) { // Transformation automatique de l'interface en statut
+"Libre" machine.classList.remove('en-cours'); // ... (mise a jour des couleurs
+SVG) } }); } \end{lstlisting}
+
+Grâce à cette logique et à l'attribut \texttt{data-end-time}, nous pouvons
+ajouter autant de machines ou de sèche-linges que nous voulons dans le fichier
+HTML ; le JavaScript les détectera et les animera automatiquement sans avoir
+besoin de modifier le code.
+
+\subsection*{Gestion des Pop-ups et Navigation Simulée} Pour l'affichage des
+fenêtres modales (la Carte et le Profil), nous avons opté pour une manipulation
+simple du DOM (Document Object Model). Les fenêtres sont déjà présentes dans le
+HTML mais sont cachées grâce à l'attribut \texttt{hidden}. Un clic sur le bouton
+"Plan" ou sur la photo de profil bascule cet attribut pour les afficher ou les
+cacher.
+
+Enfin, pour la navigation, nous avons utilisé une technique de "clic simulé"
+pour respecter l'architecture "Single Page Application" (SPA) de notre projet.
+
+\begin{lstlisting}[caption={Exemple de navigation simulee vers les
+reservations}] const reserveBtn = document.querySelector('.btn-primary-pill');
+if (reserveBtn) { reserveBtn.addEventListener('click', () => { // 1. On active
+un signal pour ouvrir le calendrier automatiquement window.
+openBookingModalFromHome = true;
+
+// 2. On simule un clic sur l'icone "Reservations" du menu en bas const
+navItems = document.querySelectorAll('.bottom-nav__item'); if(navItems.length >
+2) navItems[2].click(); }); } \end{lstlisting} Cette méthode permet de
+réutiliser le code de navigation global (situé dans \texttt{app.js}) sans créer
+de doublons ni de rechargement de page.
 
 \newpage
-\section*{Page d'Accueil}
-\section*{Fonctionnalités de l'Accueil}
-La page d'accueil est le tableau de bord principal de l'application. Son but est de donner à l'étudiant toutes les informations les plus importantes en un seul coup d'œil, pour qu'il ne perde pas de temps.
 
-\begin{figure}[H]  % <--- LA "H" MAYÚSCULA HACE LA MAGIA
-    \centering
-    \includegraphics[width=0.4\textwidth]{pagedaccueil.png}
-    \caption{Aperçu de la page d'accueil.}
-    \label{fig:page-accueil}
-\end{figure}
+\section*{Système de Routage et Navigation} Pour que l'application soit rapide
+et fluide, un système de "routage dynamique" a été mis en place dans le fichier
+\texttt{app.js}. Contrairement à un site web classique, l'application ne
+recharge jamais la page entière.
 
-\subsection*{L'en-tête personnalisé}
-En haut de l'écran, l'utilisateur est accueilli par son prénom (par exemple, "Bonjour, Amina") et sa photo de profil. Juste en dessous, l'application indique le nom de la laverie actuellement sélectionnée (comme "Laverie de Kergoat") et ses horaires d'ouverture (8h - 22h). Cet espace sert à rassurer l'utilisateur sur le lieu qu'il est en train de consulter. De plus, un bouton "Plan" est placé juste à côté pour permettre d'ouvrir rapidement une carte des résidences.
+\subsection*{Changement de vue sans rechargement} Lorsqu'un utilisateur clique
+sur un bouton du menu, le JavaScript va chercher le fichier HTML correspondant
+et l'injecte directement dans la page. Un système de "cache" permet de mémoriser
+les pages déjà visitées pour qu'elles s'affichent instantanément la deuxième
+fois.
 
-\subsection*{L'état des machines en direct}
-Le centre de la page est composé d'une grille montrant 4 machines à laver et 2 sèche-linges. Pour rendre l'interface très visuelle et facile à comprendre, nous avons utilisé un code couleur simple pour indiquer le statut de chaque équipement :
-\begin{itemize}
-    \item \textbf{Vert (Libre) :} La machine est prête à être utilisée immédiatement.
-    \item \textbf{Orange (En cours) :} La machine est occupée. Pour aider l'étudiant à calculer son temps, une animation circulaire avec un compte à rebours indique exactement les minutes restantes avant la fin du programme.
-    \item \textbf{Bleu (Réservée) :} La machine est bloquée et attend l'arrivée de l'étudiant qui a réservé ce créneau.
-\end{itemize}
+\subsection*{Barre de navigation (Bottom Nav)} La barre située en bas de
+l'écran permet de passer d'une section à l'autre. Elle est gérée de façon
+automatique : le script détecte l'onglet actif et change sa couleur pour guider
+l'utilisateur.
 
-\subsection*{L'action rapide (Bouton principal)}
-Enfin, en bas de l'écran, un grand bouton bleu "Réserver un créneau" flotte au-dessus du contenu. Il s'agit de l'action principale de l'application. Un simple clic sur ce bouton connecte directement l'utilisateur au calendrier de réservation, ce qui rend l'expérience beaucoup plus fluide et rapide.
+\begin{figure}[H] \centering \includegraphics[width=0.5\textwidth]{navigation.
+png} \caption{Aperçu de la barre de navigation dynamique.} \label{fig:
+navigation} \end{figure}
 
-\section*{Navigation et Fenêtres Contextuelles (Pop-ups)}
-Afin de rendre l'application plus fluide et d'éviter de recharger la page entière, nous avons intégré des "pop-ups" (ou fenêtres modales) directement sur la page d'accueil. Cette technique améliore considérablement l'expérience utilisateur (UX) car elle donne l'impression d'utiliser une véritable application mobile native. L'utilisateur reste toujours dans son contexte sans perdre le fil de sa navigation.
+\newpage \section*{Page de Classement (Ranking)}
 
-\subsection*{Pop-up de la Carte (Plan)}
-En cliquant sur le bouton "Plan" situé en haut à droite de l'écran, une fenêtre superposée s'ouvre avec une carte interactive Google Maps intégrée. Cette carte montre avec précision 3 points (pins) rouges qui correspondent aux 3 résidences CROUS situées dans Brest Métropole. Cela est très utile pour les étudiants qui souhaitent vérifier la distance ou l'emplacement d'une autre laverie si la leur est complète. La fenêtre se ferme facilement en touchant la croix ou simplement en cliquant sur le fond sombre.
+L'une des sections principales du menu de navigation est l'onglet « Classement
+». Cette vue permet de visualiser le score de crédit actuel de l'utilisateur
+ainsi que sa position relative par rapport aux autres résidents. L'idée
+fondamentale de notre projet est de gérer la priorité des réservations des
+machines en fonction de ce score. Ainsi, en cas de requêtes simultanées pour un
+même créneau ou une même machine, l'application accordera la priorité à
+l'utilisateur possédant le meilleur score de crédit.
 
-% --- ESPACE POUR L'IMAGE DE LA CARTE ---
-\begin{figure}[H]  % <--- LA "H" MAYÚSCULA HACE LA MAGIA
-    \centering
-    \includegraphics[width=0.4\textwidth]{popupmapa.png}
-    \caption{Aperçu de la fenêtre modale affichant la carte interactive des résidences CROUS.}
-    \label{fig:popup-carte}
-\end{figure}
+\subsection*{Score Personnel} L'interface présente en premier lieu la section
+dédiée au score personnel. Nous y avons intégré une animation circulaire qui se
+remplit progressivement pour afficher le score cumulé de l'utilisateur de
+manière dynamique. De plus, selon le nombre de points obtenus, un message
+contextuel indique la position de l'utilisateur dans le classement global (par
+exemple, l'appartenance au top 10\% des utilisateurs de la résidence).
 
-\subsection*{Pop-up du Profil Rapide}
-Pour offrir un raccourci pratique, un clic sur la photo de profil ouvre un petit résumé des données de l'utilisateur. Par exemple, pour l'étudiante Amina Rahmani, le pop-up affiche son nom complet, son e-mail universitaire et son numéro de téléphone dans un design épuré avec des cadres blancs arrondis. En bas de ce pop-up, le bouton "Voir mon profil" permet de naviguer instantanément vers la section complète du compte.
+\begin{figure}[H] \centering \includegraphics[width=0.
+4\textwidth]{personal_score.png} \caption{Affichage dynamique du score personnel
+de l'utilisateur.} \label{fig:ranking-score} \end{figure}
 
-\begin{figure}[H]
-    \centering
-    % Asegurate de que el archivo subido se llame exactamente popupmapa.png 
-    \includegraphics[width=0.4\textwidth]{popupprofil.png}
-    \caption{Aperçu du pop-up de profil rapide avec les coordonnées basiques de l'utilisateur.}
-    \label{fig:popup-profil}
-\end{figure}
+\subsection*{Classement Global} Dans un second temps, la vue intègre le
+classement global des utilisateurs (Leaderboard). Afin de séparer la logique de
+programmation de l'interface web de la base de données des utilisateurs, les
+informations sont gérées et récupérées via un fichier \texttt{.json}. Ce fichier
+de données stocke les attributs essentiels de chaque résident, tels que le nom,
+le score, la position dans le classement et le chemin d'accès vers la photo de
+profil.
 
-\subsection*{Pop-up de Réservation}
-L'objectif principal de l'application est de permettre à l'utilisateur de réserver un créneau pour une machine spécifique à l'avance. Pour faciliter cette action fondamentale, le grand bouton bleu "Réserver un créneau", situé en bas de l'écran d'accueil, fait le lien direct. Lorsqu'on le touche, il simule une navigation vers l'onglet des réservations et indique au système d'ouvrir automatiquement la fenêtre modale du calendrier. L'étudiant peut ainsi choisir sa date et son heure immédiatement, ce qui lui fait gagner des clics.
+\begin{figure}[H] \centering \includegraphics[width=0.
+3\textwidth]{ranking_scores.png} \caption{Classement global des utilisateurs
+alimenté par un fichier JSON.} \label{fig:ranking-leaderboard} \end{figure}
 
-% --- ESPACE POUR L'IMAGE DE RÉSERVATION ---
-\begin{figure}[H]
-    \centering
-    % Asegurate de que el archivo subido se llame exactamente popupmapa.png 
-    \includegraphics[width=0.38\textwidth]{popupreserv.png}
-    \caption{Aperçu de la fenêtre modale de réservation avec le calendrier et les horaires.}
-    \label{fig:popup-reservation}
-\end{figure}
+\subsection*{Politiques d'Utilisation et Fenêtre Modale d'Information} Enfin,
+comme illustré sur la vue du score personnel, un bouton d'aide en forme de point
+d'interrogation est mis à la disposition de l'utilisateur. Un clic sur ce bouton
+déclenche l'apparition d'une fenêtre contextuelle (pop-up modale) centrée sur
+l'écran, qui détaille les politiques de l'application. Elle explique
+concrètement les actions permettant à un utilisateur de gagner ou de perdre des
+points. Cette approche garantit que l'utilisateur est pleinement informé des
+comportements attendus dans la laverie.
 
-\section*{Détails Techniques : Le code \texttt{home.js}}
-La logique interactive de cette page se trouve dans le fichier \texttt{home.js}.
+\begin{figure}[H] \centering \includegraphics[width=0.
+3\textwidth]{ranking_politics.png} \caption{Fenêtre modale détaillant les
+politiques d'attribution des points.} \label{fig:ranking-politics} \end{figure}
 
-\subsection*{Persistance des données (Le système de mémoire)}
-L'un des défis techniques était de garder les chronomètres actifs même si l'utilisateur change d'onglet (par exemple, s'il va voir son profil puis revient à l'accueil). Pour résoudre cela, nous utilisons un objet \texttt{Map()} appelé \texttt{homeMachineEndTimes}. 
-Lorsqu'une machine commence à tourner, le système enregistre son heure de fin dans cette "mémoire". Ainsi, quand la vue \texttt{initHomeView()} est rechargée, le code vérifie d'abord si la machine a déjà une heure de fin enregistrée avant de créer un nouveau chronomètre.
+\newpage \section*{Page des Réservations}
 
-\subsection*{Un calcul du temps générique et automatique}
-La fonction \texttt{updateTimers()} est responsable de faire reculer le temps. Ce qui est intéressant dans notre code, c'est sa flexibilité. La fonction ne cherche pas "le lave-linge 2" ou "le sèche-linge 1". Elle cherche simplement n'importe quel élément HTML qui possède la classe CSS \texttt{.en-cours}. 
+La page \textbf{Réservations} constitue l'espace central de planification de
+l'application. Alors que la page d'accueil permet surtout de consulter
+rapidement l'état global de la laverie, cette vue donne à l'étudiant les outils
+nécessaires pour \textbf{anticiper sa lessive}, \textbf{choisir un créneau
+pertinent} et \textbf{retrouver l'historique détaillé de ses sessions
+précédentes}.
 
-\newpage
-\begin{lstlisting}[caption={Extrait de la fonction de mise à jour du temps}]
-function updateTimers() {
-    // Le code trouve automatiquement les lave-linges ET les seche-linges occupes
-    const machines = document.querySelectorAll('.machine-card.en-cours');
+Cette interface a été pensée comme une expérience mobile complète :
+l'utilisateur peut y voir son prochain tour, consulter un aperçu du calendrier
+du mois, identifier les jours de plus forte ou de plus faible demande, puis
+ouvrir une fenêtre modale pour choisir précisément une date et une heure.
+L'ensemble garde ainsi une logique simple : \textit{observer, décider, réserver}.
 
-    machines.forEach(machine => {
-        // Lecture de l'heure de fin directement depuis le HTML
-        const endTimeAttr = machine.dataset.endTime;
-        const remaining = new Date(endTimeAttr).getTime() - Date.now();
+\subsection*{Vue d'ensemble de l'écran} L'écran est organisé en quatre cartes
+principales superposées verticalement : \begin{itemize} \item une \textbf{carte
+de synthèse} affichant la prochaine réservation de l'utilisateur sous forme de
+compte à rebours ; \item une \textbf{carte calendrier} offrant une vue rapide du
+mois courant avec une légende visuelle ; \item une \textbf{carte statistique}
+représentant la demande sur les sept prochains jours ; \item une \textbf{carte
+d'historique} listant les dernières sessions avec leur durée, leur prix, leur
+statut et leur mode de paiement. \end{itemize}
 
-        if (remaining <= 0) {
-            // Transformation automatique de l'interface en statut "Libre"
-            machine.classList.remove('en-cours');
-            // ... (mise a jour des couleurs SVG)
-        }
-    });
+Cette hiérarchie visuelle permet à l'utilisateur de comprendre immédiatement sa
+situation actuelle, puis d'agir sans quitter la même vue.
+
+\begin{figure}[H] \centering \begin{subfigure}{0.31\textwidth} \centering
+\includegraphics[width=\linewidth]{reservations_overview.png} \caption{Partie
+supérieure de l'écran} \end{subfigure} \hfill \begin{subfigure}{0.31\textwidth}
+\centering \includegraphics[width=\linewidth]{reservations_overview_2.png}
+\caption{Partie inférieure de l'écran} \end{subfigure} \caption{Vue d'ensemble
+de l'onglet Réservations avec la synthèse, le calendrier, la demande journalière
+et l'historique.} \label{fig:reservations-overview} \end{figure}
+
+\subsection*{La synthèse de la prochaine réservation} La première carte agit
+comme un rappel immédiat. Si une réservation est déjà active, l'utilisateur voit
+apparaître un \textbf{compte à rebours en heures et minutes} avant son prochain
+créneau, accompagné d'un résumé textuel comprenant le jour, l'heure et la
+machine concernée. Cette présentation répond à un besoin pratique : éviter
+d'oublier un créneau déjà réservé et réduire le stress lié à l'organisation du
+lavage.
+
+Lorsque l'utilisateur n'a aucune réservation active, cette même carte change
+complètement d'état. Le compte à rebours disparaît et laisse place à un message
+indiquant qu'aucun créneau n'est actuellement réservé. Cette variation d'état
+rend l'interface plus explicite et évite les ambiguïtés.
+
+\subsection*{Le calendrier d'aperçu et la logique de recommandation} La seconde
+carte présente un \textbf{aperçu mensuel du calendrier}. Chaque jour est affiché
+sous forme de bouton compact. Une légende simple permet de comprendre la logique
+visuelle : \begin{itemize} \item \textbf{Bleu} : créneau recommandé ; \item
+\textbf{Rouge} : aucun créneau disponible ; \item \textbf{Gris clair} : jour
+passé ou non sélectionnable. \end{itemize}
+
+Ce choix graphique répond à un objectif ergonomique important : permettre à
+l'utilisateur de \textbf{repérer d'un coup d'œil les meilleures opportunités de
+réservation} sans devoir ouvrir immédiatement le sélecteur détaillé. La
+recommandation n'est pas arbitraire : elle repose sur une estimation de la
+demande, et le système met en avant le jour futur le moins chargé parmi ceux qui
+restent disponibles.
+
+\subsection*{La demande par jour} Sous le calendrier, une carte supplémentaire
+affiche la \textbf{demande journalière sur sept jours}. La représentation
+choisie est un histogramme vertical très simple, adapté à un écran mobile.
+Chaque colonne correspond à un jour et la barre la plus haute est mise en valeur
+en bleu afin d'indiquer le pic de demande.
+
+L'objectif n'est pas de fournir une analyse statistique complexe, mais d'aider
+l'utilisateur à comparer rapidement les jours et à comprendre quels moments sont
+les plus sollicités. Cette information vient compléter la recommandation du
+calendrier : au lieu de réserver "à l'aveugle", l'étudiant peut visualiser la
+charge globale de la semaine.
+
+\subsection*{L'historique des réservations} La dernière carte contient
+l'\textbf{historique des 4 dernier réservations passées}. Chaque ligne affiche
+la machine utilisée, la durée de la session, la date, le prix payé ainsi que le
+statut final de la réservation. Une icône différente est affichée selon le mode
+de paiement utilisé, ce qui rend la lecture plus visuelle et facilite la
+distinction entre carte bancaire, espèces ou QR code.
+
+Cette partie donne de la cohérence à l'expérience utilisateur car elle relie
+l'action présente de réservation à un historique concret d'utilisation. Elle
+joue aussi un rôle rassurant : l'étudiant peut vérifier qu'une réservation a
+bien été effectuée, terminée ou annulée.
+
+\subsection*{Réserver un nouveau créneau} Lorsque l'utilisateur touche la carte
+du calendrier, l'application ouvre une \textbf{fenêtre modale de réservation}.
+Cette fenêtre est structurée en deux étapes successives : \begin{enumerate}
+\item choisir une date ; \item choisir une heure. \end{enumerate}
+
+La partie supérieure de la modale reprend un calendrier mensuel plus détaillé.
+L'utilisateur peut naviguer d'un mois à l'autre grâce à des flèches latérales,
+mais aussi par un geste de glissement horizontal, ce qui renforce le caractère
+mobile de l'interface. Les jours passés sont automatiquement désactivés afin
+d'éviter toute réservation incohérente.
+
+Une fois la date choisie, la partie inférieure affiche les \textbf{créneaux
+horaires disponibles}. Chaque horaire apparaît sous forme de bouton. Les
+créneaux déjà pris sont affichés dans un état bloqué, les créneaux passés sont
+désactivés, et le créneau sélectionné est mis en évidence en bleu. Le bouton de
+confirmation n'est activé que lorsque la sélection est complète, ce qui évite
+les erreurs de validation.
+
+\begin{figure}[H] \centering \begin{subfigure}{0.31\textwidth} \centering
+\includegraphics[width=\linewidth]{reservations_reserve_date.png} \caption{Choix
+initial de la date} \end{subfigure} \hfill \begin{subfigure}{0.31\textwidth}
+\centering \includegraphics[width=\linewidth]{reservations_reserve_date_2.png}
+\caption{Créneau horaire sélectionné} \end{subfigure} \caption{Fenêtre modale de
+réservation permettant de choisir un jour puis une heure.} \label{fig:
+reservations-booking} \end{figure}
+
+\subsection*{Consulter et annuler sa réservation} La carte de synthèse située
+en haut de l'écran est également interactive. En la touchant, l'utilisateur
+ouvre une seconde \textbf{fenêtre modale de détail}. Cette modale a deux états
+possibles : \begin{itemize} \item un état \textbf{informatif} lorsqu'une
+réservation est active ; \item un état \textbf{vide} lorsqu'aucune réservation
+n'est programmée. \end{itemize}
+
+Dans le premier cas, l'application affiche le nom de la machine, la date,
+l'heure, la durée et le prix. Un bouton rouge permet alors d'\textbf{annuler la
+réservation}. Dans le second cas, la modale joue surtout un rôle de confirmation
+visuelle : elle informe clairement l'utilisateur qu'aucun prochain tour n'est
+réservé. Cette distinction entre état plein et état vide améliore la lisibilité
+générale du système.
+
+\begin{figure}[H] \centering \begin{subfigure}{0.31\textwidth} \centering
+\includegraphics[width=\linewidth]{reservations_your_reservation.png}
+\caption{Réservation active} \end{subfigure} \hfill \begin{subfigure}{0.
+31\textwidth} \centering
+\includegraphics[width=\linewidth]{reservations_your_reservation_No_reservation.
+png} \caption{Aucune réservation en cours} \end{subfigure} \caption{Fenêtre
+modale de détail de réservation selon les deux états possibles de l'application.
+} \label{fig:reservations-detail} \end{figure}
+
+\section*{Détails Techniques : Le code \texttt{reservations.js}}
+
+La logique interactive de cette page est répartie en deux fichiers
+complémentaires : \begin{itemize} \item \texttt{reservations.js}, chargé du
+rendu de l'interface et des interactions utilisateur ; \item
+\texttt{reservations.service.js}, chargé de gérer les données, la persistance
+locale et les opérations de réservation/annulation. \end{itemize}
+
+Cette séparation permet de conserver une architecture claire : la vue s'occupe
+d'afficher et d'écouter, tandis que le service s'occupe de stocker, vérifier et
+mettre à jour les données.
+
+\subsection*{Une vue pilotée par un état centralisé} Le fichier
+\texttt{reservations.js} repose sur un objet \texttt{state} contenant toutes les
+informations nécessaires au fonctionnement de l'écran : le mois affiché, la date
+sélectionnée, l'heure sélectionnée, les créneaux disponibles et la modale active.
+
+Cette approche présente un avantage important : au lieu de recalculer
+manuellement chaque composant indépendamment, le script met à jour cet état puis
+relance les fonctions de rendu appropriées. L'écran reste donc cohérent même
+lorsqu'on change de mois, qu'on ouvre une modale ou qu'on réserve un créneau.
+
+\subsection*{Recommandation automatique d'une date} L'une des fonctions les
+plus intéressantes de cette vue est le calcul automatique du jour recommandé. Le
+système parcourt les jours du mois courant, ignore les dates passées ainsi que
+les journées saturées, puis met en avant le jour présentant la plus faible
+demande.
+
+\begin{lstlisting}[caption={Extrait simplifie de la logique de recommandation}]
+function getRecommendedDateKey(monthDate) { const todayKey = window.
+ReservationsService.todayKey(); let bestDateKey = null; let bestDemandValue =
+Number.POSITIVE_INFINITY;
+
+for (let day = 1; day <= lastDay; day += 1) { const dateKey = toDateKey(new
+Date( monthDate.getFullYear(), monthDate.getMonth(), day ));
+
+if (compareDateKeys(dateKey, todayKey) < 0) continue;
+
+const demandValue = getDemandValue(dateKey); if (demandValue >= 10) continue;
+
+if (demandValue < bestDemandValue) { bestDemandValue = demandValue;
+bestDateKey = dateKey; } } return bestDateKey; } \end{lstlisting}
+
+Grâce à cette logique, l'application n'affiche pas seulement un calendrier
+statique : elle propose une aide à la décision directement intégrée à
+l'interface.
+
+\subsection*{Un système de réservation cohérent et persistant} Le service
+\texttt{reservations.service.js} joue le rôle d'une petite base de données
+locale. Il charge d'abord les données depuis le fichier \texttt{reservations.
+json}, vérifie leur validité, puis les conserve dans le navigateur via
+\texttt{localStorage}. Ainsi, lorsqu'un utilisateur change d'onglet ou recharge
+la vue, l'état de sa réservation reste cohérent.
+
+Lorsqu'un créneau est confirmé, le service effectue plusieurs opérations
+successives : \begin{itemize} \item vérifier que la date et l'heure sont valides
+; \item refuser les créneaux déjà passés ou déjà réservés ; \item retirer
+l'ancienne réservation éventuelle ; \item enregistrer le nouveau créneau dans la
+liste des slots occupés ; \item mettre à jour la demande journalière ; \item
+sauvegarder l'ensemble en mémoire locale. \end{itemize}
+
+\begin{lstlisting}[caption={Principe simplifie de validation et de sauvegarde
+d'une reservation}] async function reserveSlot(dateKey, time) { if (!
+isFutureSlot(dateKey, time)) { return { ok: false, message: "Impossible de
+reserver un creneau passe." }; }
+
+const daySlots = dbCache.bookedSlots[dateKey] || []; if (daySlots.
+includes(time)) { return { ok: false, message: "Ce creneau est deja pris." }; }
+
+if (dbCache.nextReservation) { updateDemand(dbCache.nextReservation.date, -1);
 }
-\end{lstlisting}
 
-Grâce à cette logique et à l'attribut \texttt{data-end-time}, nous pouvons ajouter autant de machines ou de sèche-linges que nous voulons dans le fichier HTML ; le JavaScript les détectera et les animera automatiquement sans avoir besoin de modifier le code.
+dbCache.nextReservation = { date: dateKey, time, ... }; updateDemand(dateKey,
+1); persist();
 
-\subsection*{Gestion des Pop-ups et Navigation Simulée}
-Pour l'affichage des fenêtres modales (la Carte et le Profil), nous avons opté pour une manipulation simple du DOM (Document Object Model). Les fenêtres sont déjà présentes dans le HTML mais sont cachées grâce à l'attribut \texttt{hidden}. Un clic sur le bouton "Plan" ou sur la photo de profil bascule cet attribut pour les afficher ou les cacher.
+return { ok: true }; } \end{lstlisting}
 
-Enfin, pour la navigation, nous avons utilisé une technique de "clic simulé" pour respecter l'architecture "Single Page Application" (SPA) de notre projet. 
+Cette logique garantit qu'une seule réservation active est associée à
+l'utilisateur à un instant donné, tout en gardant les statistiques de demande
+alignées avec l'état réel de la vue.
 
-
-\begin{lstlisting}[caption={Exemple de navigation simulee vers les reservations}]
-const reserveBtn = document.querySelector('.btn-primary-pill');
-if (reserveBtn) {
-    reserveBtn.addEventListener('click', () => {
-        // 1. On active un signal pour ouvrir le calendrier automatiquement
-        window.openBookingModalFromHome = true;
-
-        // 2. On simule un clic sur l'icone "Reservations" du menu en bas
-        const navItems = document.querySelectorAll('.bottom-nav__item');
-        if(navItems.length > 2) navItems[2].click();
-    });
-}
-\end{lstlisting}
-Cette méthode permet de réutiliser le code de navigation global (situé dans \texttt{app.js}) sans créer de doublons ni de rechargement de page.
-
-\newpage
-
-\section*{Système de Routage et Navigation}
-Pour que l'application soit rapide et fluide, un système de "routage dynamique" a été mis en place dans le fichier \texttt{app.js}. Contrairement à un site web classique, l'application ne recharge jamais la page entière.
-
-\subsection*{Changement de vue sans rechargement}
-Lorsqu'un utilisateur clique sur un bouton du menu, le JavaScript va chercher le fichier HTML correspondant et l'injecte directement dans la page. Un système de "cache" permet de mémoriser les pages déjà visitées pour qu'elles s'affichent instantanément la deuxième fois.
-
-\subsection*{Barre de navigation (Bottom Nav)}
-La barre située en bas de l'écran permet de passer d'une section à l'autre. Elle est gérée de façon automatique : le script détecte l'onglet actif et change sa couleur pour guider l'utilisateur.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{navigation.png}
-    \caption{Aperçu de la barre de navigation dynamique.}
-    \label{fig:navigation}
-\end{figure}
-
-\newpage
-\section*{Page de Classement (Ranking)}
-
-L'une des sections principales du menu de navigation est l'onglet « Classement ». Cette vue permet de visualiser le score de crédit actuel de l'utilisateur ainsi que sa position relative par rapport aux autres résidents. L'idée fondamentale de notre projet est de gérer la priorité des réservations des machines en fonction de ce score. Ainsi, en cas de requêtes simultanées pour un même créneau ou une même machine, l'application accordera la priorité à l'utilisateur possédant le meilleur score de crédit.
-
-\subsection*{Score Personnel}
-L'interface présente en premier lieu la section dédiée au score personnel. Nous y avons intégré une animation circulaire qui se remplit progressivement pour afficher le score cumulé de l'utilisateur de manière dynamique. De plus, selon le nombre de points obtenus, un message contextuel indique la position de l'utilisateur dans le classement global (par exemple, l'appartenance au top 10\% des utilisateurs de la résidence).
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.4\textwidth]{personal_score.png}
-    \caption{Affichage dynamique du score personnel de l'utilisateur.}
-    \label{fig:ranking-score}
-\end{figure}
-
-\subsection*{Classement Global}
-Dans un second temps, la vue intègre le classement global des utilisateurs (Leaderboard). Afin de séparer la logique de programmation de l'interface web de la base de données des utilisateurs, les informations sont gérées et récupérées via un fichier \texttt{.json}. Ce fichier de données stocke les attributs essentiels de chaque résident, tels que le nom, le score, la position dans le classement et le chemin d'accès vers la photo de profil.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\textwidth]{ranking_scores.png}
-    \caption{Classement global des utilisateurs alimenté par un fichier JSON.}
-    \label{fig:ranking-leaderboard}
-\end{figure}
-
-\subsection*{Politiques d'Utilisation et Fenêtre Modale d'Information}
-Enfin, comme illustré sur la vue du score personnel, un bouton d'aide en forme de point d'interrogation est mis à la disposition de l'utilisateur. Un clic sur ce bouton déclenche l'apparition d'une fenêtre contextuelle (pop-up modale) centrée sur l'écran, qui détaille les politiques de l'application. Elle explique concrètement les actions permettant à un utilisateur de gagner ou de perdre des points. Cette approche garantit que l'utilisateur est pleinement informé des comportements attendus dans la laverie.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\textwidth]{ranking_politics.png}
-    \caption{Fenêtre modale détaillant les politiques d'attribution des points.}
-    \label{fig:ranking-politics}
-\end{figure}
-
-\section*{Le Module Profil : Une Navigation Intuitive}
-Le module de profil a été conçu pour ressembler à une application mobile native, tant par son fonctionnement que par son esthétique épurée.
-
-\subsection*{Design et Interface Visuelle}
-L'interface du profil se divise en trois zones distinctes pour une lecture rapide :
-\begin{itemize}
-    \item \textbf{L'En-tête} : Affiche clairement le titre "Profil" accompagné d'une icône de notification (cloche) pour les alertes urgentes.
-    \item \textbf{La Zone Utilisateur} : Met en avant l'identité de l'étudiant avec un avatar circulaire bordé aux couleurs de l'application. Les informations de contact (nom, e-mail, téléphone) sont présentées dans des blocs blancs arrondis, créant un contraste doux avec le fond légèrement grisé.
-    \item \textbf{La Liste de Navigation} : Les différentes options de gestion sont organisées sous forme de liste avec des séparateurs fins et des icônes de flèches (chevrons), invitant l'utilisateur à explorer les sous-menus.
+\subsection*{Une interaction pensée pour le mobile} Au-delà du simple affichage,
+la vue a été conçue avec plusieurs détails d'interaction : \begin{itemize}
+\item ouverture et fermeture de modales sans rechargement de page ; \item
+fermeture au clic sur l'arrière-plan ; \item navigation clavier avec
+\texttt{Escape}, \texttt{ArrowLeft} et \texttt{ArrowRight} ; \item changement de
+mois par glissement horizontal ; \item adaptation responsive pour petits écrans.
 \end{itemize}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.25\textwidth]{profil_principal.png}
-    \caption{Interface principale du compte utilisateur.}
-    \label{fig:profil-main}
-\end{figure}
+Le fichier \texttt{reservations.css} complète cette logique avec une
+présentation très proche d'une application mobile native : fond flou derrière
+les modales, cartes arrondies, boutons larges et zones tactiles confortables.
+L'ensemble donne une sensation de fluidité cohérente avec le reste de
+l'application.
 
-\subsection*{Architecture des écrans}
-Au lieu d'ouvrir de nouvelles pages, le système affiche ou cache des blocs de contenu en fonction des clics de l'utilisateur. En cliquant sur une option du menu, le menu principal disparaît pour laisser place aux détails. Un bouton "Retour" permet de faire le chemin inverse instantanément.
+\subsection*{Intégration avec le reste de l'application} Enfin, cette page
+s'intègre naturellement dans l'architecture SPA globale du projet. Elle peut
+être ouverte depuis la barre de navigation inférieure, mais aussi depuis le
+bouton principal de la page d'accueil. Dans ce deuxième cas, un indicateur
+global permet d'ouvrir automatiquement la modale de réservation dès l'arrivée
+sur la vue.
 
-\section*{Fonctionnement technique des sous-menus}
-Chaque section du profil répond à un besoin spécifique de l'étudiant, avec une gestion dynamique des données.
+Ce détail montre que la page Réservations n'est pas un module isolé : elle est
+pensée comme le prolongement direct de l'écran d'accueil et comme l'un des
+centres fonctionnels majeurs de l'application.
 
-\subsection*{Données personnelles et Moyens de paiement}
-Le sous-menu \textbf{Données} permet de consulter ses informations officielles (adresse, date de naissance). Pour le \textbf{Paiement}, un algorithme de sécurité masque les numéros de carte bancaire, ne laissant visibles que les chiffres nécessaires à l'identification de la carte (ex: 4502 •••• •••• 1234).
+\section*{Le Module Profil : Une Navigation Intuitive} Le module de profil a
+été conçu pour ressembler à une application mobile native, tant par son
+fonctionnement que par son esthétique épurée.
 
-\subsection*{Historique et Notifications}
-L'\textbf{Historique} permet de suivre les 24 dernières utilisations des machines avec le prix et le statut de chaque session. Les \textbf{Notifications} centralisent les messages système (fin de cycle, alertes de maintenance) avec un code couleur par type d'alerte.
+\subsection*{Design et Interface Visuelle} L'interface du profil se divise en
+trois zones distinctes pour une lecture rapide : \begin{itemize} \item
+\textbf{L'En-tête} : Affiche clairement le titre "Profil" accompagné d'une icône
+de notification (cloche) pour les alertes urgentes. \item \textbf{La Zone
+Utilisateur} : Met en avant l'identité de l'étudiant avec un avatar circulaire
+bordé aux couleurs de l'application. Les informations de contact (nom, e-mail,
+téléphone) sont présentées dans des blocs blancs arrondis, créant un contraste
+doux avec le fond légèrement grisé. \item \textbf{La Liste de Navigation} : Les
+différentes options de gestion sont organisées sous forme de liste avec des
+séparateurs fins et des icônes de flèches (chevrons), invitant l'utilisateur à
+explorer les sous-menus. \end{itemize}
 
-\subsection*{Paramètres et Support}
-La section \textbf{Paramètres} offre des options de personnalisation comme le mode sombre ou les préférences de notification via des commutateurs (toggles) interactifs. Enfin, \textbf{Aide \& Support} propose une assistance directe et une foire aux questions pour résoudre les problèmes courants en laverie.
+\begin{figure}[H] \centering \includegraphics[width=0.
+25\textwidth]{profil_principal.png} \caption{Interface principale du compte
+utilisateur.} \label{fig:profil-main} \end{figure}
 
-\section*{Gestion et Origine des Données}
-Le projet repose sur l'utilisation de fichiers JSON pour simuler une base de données réelle.
-\begin{itemize}
-    \item \textbf{Création de fichiers} : Les structures des fichiers \texttt{profile.json} et \texttt{notifications.json} ont été créées de toutes pièces pour répondre aux besoins de l'interface de profil.
-    \item \textbf{Intégration technique} : Les fichiers \texttt{reservations.json} et \texttt{ranking.json} étaient déjà présents. Le travail a consisté à les connecter à l'interface en utilisant des fonctions asynchrones (\texttt{fetch} et \texttt{Promise.all}), ce qui permet de charger toutes les données en même temps avant d'afficher l'écran à l'utilisateur.
-\end{itemize}
+\subsection*{Architecture des écrans} Au lieu d'ouvrir de nouvelles pages, le
+système affiche ou cache des blocs de contenu en fonction des clics de
+l'utilisateur. En cliquant sur une option du menu, le menu principal disparaît
+pour laisser place aux détails. Un bouton "Retour" permet de faire le chemin
+inverse instantanément.
 
-\begin{figure}[H]
-    \centering
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_donnees.png}
-        \caption{Données}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_paiement.png}
-        \caption{Paiement}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_historique.png}
-        \caption{Historique}
-    \end{subfigure}
-    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil (Partie 1/2).}
-    \label{fig:profil-grid-1}
-\end{figure}
+\section*{Fonctionnement technique des sous-menus} Chaque section du profil
+répond à un besoin spécifique de l'étudiant, avec une gestion dynamique des
+données.
 
-\begin{figure}[H]
-    \ContinuedFloat 
-    \centering
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_notifs.png}
-        \caption{Notifications}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_params.png}
-        \caption{Paramètres}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.25\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{sub_support.png}
-        \caption{Support}
-    \end{subfigure}
-    \caption{Grille des six sous-menus intégrés dynamiquement dans le profil (Suite).}
-    \label{fig:profil-grid-2}
-\end{figure}
+\subsection*{Données personnelles et Moyens de paiement} Le sous-menu
+\textbf{Données} permet de consulter ses informations officielles (adresse, date
+de naissance). Pour le \textbf{Paiement}, un algorithme de sécurité masque les
+numéros de carte bancaire, ne laissant visibles que les chiffres nécessaires à
+l'identification de la carte (ex: 4502 •••• •••• 1234).
 
+\subsection*{Historique et Notifications} L'\textbf{Historique} permet de
+suivre les 24 dernières utilisations des machines avec le prix et le statut de
+chaque session. Les \textbf{Notifications} centralisent les messages système
+(fin de cycle, alertes de maintenance) avec un code couleur par type d'alerte.
+
+\subsection*{Paramètres et Support} La section \textbf{Paramètres} offre des
+options de personnalisation comme le mode sombre ou les préférences de
+notification via des commutateurs (toggles) interactifs. Enfin, \textbf{Aide \&
+Support} propose une assistance directe et une foire aux questions pour résoudre
+les problèmes courants en laverie.
+
+\section*{Gestion et Origine des Données} Le projet repose sur l'utilisation de
+fichiers JSON pour simuler une base de données réelle. \begin{itemize} \item
+\textbf{Création de fichiers} : Les structures des fichiers \texttt{profile.
+json} et \texttt{notifications.json} ont été créées de toutes pièces pour
+répondre aux besoins de l'interface de profil. \item \textbf{Intégration
+technique} : Les fichiers \texttt{reservations.json} et \texttt{ranking.json}
+étaient déjà présents. Le travail a consisté à les connecter à l'interface en
+utilisant des fonctions asynchrones (\texttt{fetch} et \texttt{Promise.all}), ce
+qui permet de charger toutes les données en même temps avant d'afficher l'écran
+à l'utilisateur. \end{itemize}
+
+\begin{figure}[H] \centering \begin{subfigure}{0.25\textwidth} \centering
+\includegraphics[width=\linewidth]{sub_donnees.png} \caption{Données}
+\end{subfigure} \hfill \begin{subfigure}{0.25\textwidth} \centering
+\includegraphics[width=\linewidth]{sub_paiement.png} \caption{Paiement}
+\end{subfigure} \hfill \begin{subfigure}{0.25\textwidth} \centering
+\includegraphics[width=\linewidth]{sub_historique.png} \caption{Historique}
+\end{subfigure} \caption{Grille des six sous-menus intégrés dynamiquement dans
+le profil (Partie 1/2).} \label{fig:profil-grid-1} \end{figure}
+
+\begin{figure}[H] \ContinuedFloat \centering \begin{subfigure}{0.25\textwidth}
+\centering \includegraphics[width=\linewidth]{sub_notifs.png}
+\caption{Notifications} \end{subfigure} \hfill \begin{subfigure}{0.25\textwidth}
+\centering \includegraphics[width=\linewidth]{sub_params.png}
+\caption{Paramètres} \end{subfigure} \hfill \begin{subfigure}{0.25\textwidth}
+\centering \includegraphics[width=\linewidth]{sub_support.png} \caption{Support}
+\end{subfigure} \caption{Grille des six sous-menus intégrés dynamiquement dans
+le profil (Suite).} \label{fig:profil-grid-2} \end{figure}
 
 \end{document}
